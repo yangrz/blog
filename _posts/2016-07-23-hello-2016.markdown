@@ -3,7 +3,7 @@ layout:     post
 title:      "kali2.0配置vim markdown+chrome实时预览总结"
 subtitle:   " \"first blog\""
 date:       2016-07-23 21:55:00
-author:     "Ronzy"
+author:     "R0nzy"
 header-img: "img/post-bg-2015.jpg"
 tags:
     - github

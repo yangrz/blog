@@ -1,0 +1,60 @@
+-
+layout:     post
+title:      "C++学习笔记"
+subtitle:   " \"C++变量和基本类型\""
+date:       2016-07-25 21:40:00
+author:     "R0nzy"
+header-img: "img/post-bg-2015.jpg"
+tags:
+    - C++
+---
+
+##using声明  
+* 使用using声明可以在不需要加前缀namespace_name::的情况下访问命名空间中的名字。声明形式如下：  
+`using namespace::name`  
+一旦使用using声明就可以直接引用名字，从而不必再应用命名空间了。如：  
+`using std::cin;  
+...  
+cin >> s;`  
+
+---
+
+## 标准库String类型
+`include <string>`  
+`using std::string;`  
+
+---
+
+## 标准库vector类型
+* vector是同一种类型的对象的集合，每个对象都有对应的整数索引值。
+`#include <vector>`  
+`using std::vector;`  
+`...`  
+`vector<int> ivec;//使用vector对象要制定类型和一个变量的列表`  
+`vector<Sales_item> Sales_vec;`  
+* vector不是一种数据类型而是一个类模板，可用来定义多种数据类型。
+* vector可以动态增长。
+* **vector**对象动态增长：vector对象（以及其他标准库容器对象）的重要属性就在于可以在运行时高校地添加元素。虽然可以对给定元素个数的vector预先分配内存，但更有效的方法是先初始化一个空vector对象，然后再动态地增加元素。
+* 下表操作不添加元素：
+`vector<int> ivec;`  
+`for(vector<int>::size_type ix=0; ix!=10 ;++ix)`  
+`ivec[ix]=ix;`
+试图在ivec中插入10个新元素，是不行的，因为这里ivec是vector对象，下表只能用于获取已存在的元素。**必须是已存在的元素才能用下标操作符进行索引。通过下表操作符进行赋值时，不会添加任何元素，保险的写法是使用size_type类型作为vector下表类型**。如下：
+for(vector<int>::size_type ix=0; ix!=ivec.size();++ix)
+ivec[ix]=0;
+
+---
+
+##迭代器
+* 每种容器都定义了自己的迭代器类型，如vector：  
+vector<int>::iterator iter;`  
+* 每个容器都定义了自己的iterator类型，用于访问容器内的元素。
+
+---
+
+##标准库bitset类型
+
+---
+
+##标准库
+
