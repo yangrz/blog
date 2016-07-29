@@ -11,7 +11,9 @@ tags:
 
 ---
 
-##using声明  
+
+
+## using声明  
 * 使用using声明可以在不需要加前缀namespace_name::的情况下访问命名空间中的名字。声明形式如下：  
 `using namespace::name`  
 一旦使用using声明就可以直接引用名字，从而不必再应用命名空间了。如：  
@@ -47,16 +49,16 @@ ivec[ix]=0;
 
 ---
 
-##迭代器
+## 迭代器
 * 每种容器都定义了自己的迭代器类型，如vector：  
 vector<int>::iterator iter;`  
 * 每个容器都定义了自己的iterator类型，用于访问容器内的元素。
 
 ---
 
-##标准库bitset类型
+## 标准库bitset类型
 
 ---
 
-##标准库
+## 标准库
 
