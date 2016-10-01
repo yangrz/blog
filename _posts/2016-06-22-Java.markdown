@@ -12,12 +12,11 @@ tags:
   如果面试官问Integer与int的区别：估计大多数人只会说道两点，Ingeter是int的包装类，int的初值为0，Ingeter的初值为null。但是如果面试官再问一下Integer i = 1;int ii = 1; i==ii为true还是为false？估计就有一部分人答不出来了，如果再问一下其他的，估计更多的人会头脑一片混乱。所以自己写了下总结  
   
 首先看下代码：  
-`1 package com.test;
- 2 /**
- 3  * 
- 4  *
- 5  *
- 6  */
+`package com.test;  
+ /**    
+   *   
+   *  
+   *  */  
  7 public class TestInteger {
  8 
  9     /**

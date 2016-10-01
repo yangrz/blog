@@ -1,0 +1,74 @@
+layout:     post
+title:      "Spring事物管理总结"
+subtitle:   " \"Spring\""
+date:       2016-06-20 21:11:00
+author:     "R0nzy"
+header-img: "img/post-bg-2015.jpg"
+tags:
+    - Java
+---
+
+什么是事务？  
+  
+事务指的是逻辑上的一组操作，这组操作要么全部成功，要么全部失败。  
+  
+事务特性：原子性、一致性（数据完整性一致）、隔离性（多个用户并发访问数据库，用户相互之间的操作互相不干扰）、持久性（事务一旦被提交，它对数据库中数据的改变就是永久性的，即时数据库发生故障也不应该对其有影响）  
+
+
+
+Spring事务管理接口  
+  
+PlatformTransactionManager（事务管理性）  
+  
+TransactionDefinition（事务定义信息也就是隔离级别）隔离、传播、超时、只读  
+  
+安全问题：脏读、不可重复读、幻读  
+  
+事务隔离级别：  
+  
+Default：使用后台数据库默认的隔离级别  
+  
+READ_UNCOMMITED：允许你读取还未提交的改变了的数据。  
+  
+READ_COMMITED:防止脏读  
+  
+REPEATABLE_READ:避免脏读、不可重复读  
+  
+SERIALIZABLE：避免脏读、不可重复读、幻读  
+  
+TransactionStatus（事务具体运行状态也就是传播行为）  
+  
+PROPAGATION_REQUIERED：支持当前事务，如果不存在就新建一个  
+
+PROPAGATION_SUPPORT：支持当前，如果不存在，就不适用事务  
+  
+PROPAGATION_MANDATORY:支持当前事务，如果不存在，抛出异常。  
+
+PROPAGATION_REQUIRES_NEW：如果有事务存在，挂起当前事务，创建一个新的事务  
+
+PROPAGATION_NOT_SUPPORT：以非事务方式运行，如果有事物存在，挂起当前事务。  
+  
+PROPAGATION_NEVER:以非事务方式运行，如果有事物存在，抛出异常。  
+  
+PROPAGATION_NESTED:如果当前事务存在，则嵌套事务执行（回滚到保存点）。  
+  
+Spring将事务管理分成了两类：  
+  
+1、编程式事务管理：  
+  
+手动编写代码进行事务管理。（很少使用）。  
+  
+2、声明式事务管理：  
+  
+基于TransactionProxyFactoryBean的方式。（很少使用）  
+  
+需要为每个进行事务管理的类，配置一个TransactionProxyFactoryBean进行增强。  
+  
+基于AspectJ的XML方式。（经常使用）  
+  
+一旦配置好之后，类上不需要添加任何东西。  
+  
+基于注解的方式。（经常使用）  
+  
+配置简单，需要在业务层（Service）上添加一个@Transactionl的注解。  
+
