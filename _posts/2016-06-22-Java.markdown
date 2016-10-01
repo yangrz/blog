@@ -1,4 +1,4 @@
-yout:     post
+layout:     post
 title:      "Java中int和Integer类型深入比较"
 subtitle:   " \"Java基础\""
 date:       2016-06-22 22:16:00

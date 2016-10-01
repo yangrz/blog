@@ -1,3 +1,4 @@
+---  
 layout:     post
 title:      "Spring事物管理总结"
 subtitle:   " \"Spring\""
