@@ -1,0 +1,7 @@
+/bin/bash: ((: http://img.my.csdn.net/uploads/201204/12/1334216532_9745.jpg: 表达式中有语法错误 (错误符号是 "://img.my.csdn.net/uploads/201204/12/1334216532_9745.jpg")
+  
+   
+   
+3. IO复用
+4. 信号驱动IO
+5. 异步IO

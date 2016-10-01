@@ -1,0 +1,76 @@
+---
+layout:     post
+title:      "Linux安全运维学习笔记"
+subtitle:   " \"安全运维\""
+date:       2016-09-30 20:18:00
+author:     "R0nzy"
+header-img: "img/post-bg-2015.jpg"
+tags:
+    - 安全研究
+---
+
+---
+## linux安全运维几大模块 
+  
+1. 账户和登陆安全  
+* 删除特殊用户和用户组：用户有adm、lp、sync、shutdown、halt，组有  
+* 关闭系统不需要的服务：chkconfig  
+* 密码策略安全：至少6位以上，使用ssh管理  
+* 合理使用sudo、su命令：修改配置文件/etc/shadoers 控制普通用户访问的具体文件：如user01  
+ALL=/bin/more /etc/shadow 每次sudo输入密码获得5分钟维持会话  
+* 删减系统登录欢迎信息：主要有/etc/issue，/etc/issue.net、/etc/redhat-release和/etc/motd  
+/etc/issue和/etc/issue.net记录了操作系统的名称和版本号 /etc/redhat-release记录了操作系统的名称和版本号，可将内容删除。/etc/motd是系统公告信息，每次登陆都会加载并显示。  
+* 禁止ctrl+alt+delete键盘关闭：该/etc/inittab  
+  
+2. 远程访问和认证安全  
+* 使用ssh，不用telnet  
+* 合理使用shell历史命令记录功能：修改/etc/bashrc文件，记录详细时间。同时使用脚本将历史文件保存在一个安全的地方（修改代码/etc/profile）。  
+* 启用tcp_wrapper防火墙：该配置文件/etc/hosts.allow和/etc/hosts.deny格式为：service：host（s） [:action]  
+如：ALL：ALL EXCEPT 192.168.12.189   
+
+3. 文件系统安全  
+* 锁定系统重要文件：让root用户都不能修改或者删除某个文件。chattr命令和lsattr命令,
+chattr +i xxx:i表示不能被修改、删除、重命名、设定链接等，同时不能写。
+chattr +a xxx:a表示只能追加，不能删除。a常用于服务器日志文件安全设定。
+注意：不能保护/，/dev，/tmp，/var等目录  
+* 文件权限修改和检查：尽量减少系统中写权限、含有”s“位程序、suid和sgid文件、没有属主的文件
+* /tmp、/var/tmp、/dev/shm安全设定  
+/tmp分独立磁盘分区和根分区：独立磁盘分区修改/etc/fstab文件中/tmp分区对应的挂在属性，加上nosuid、noexec、nodev三个选项。根分区下通过创建一个loopback文件系统来利用linux内核的loopback特性将文件系统挂载到/tmp下  
+
+4. 系统软件安全管理  
+* 用yum自动对软件升级  
+  
+5. 后门检测  
+* 文件级别rootkit：定期对文件进行完整性检查，用md5sum等都可以  
+* 内核级别rootkit：chkrootkit、RKHunter对付  
+
+---  
+
+## 服务器遭受攻击后的一般处理思路  
+一般思路：  
+1. 切断网络  
+2. 查找攻击源  
+3. 分析入侵原因和途径  
+4. 备份用户数据  
+5. 重新安装系统  
+6. 修复程序或者系统漏洞  
+7. 恢复数据和连接网络  
+
+检查并锁定可疑用户：  
+1. 登陆系统查看可疑用户：使用w命令  
+2. 锁定可疑用户：假设可疑用户为nobody，则使用passwd -l nobody，并将nobody用户踢下 线；kill -9 6051(这里假设用户登录的pid值为6051，使用ps -ef|grep @pts/3)  
+3. 通过last命令查看用户登录事件（last结果来源于/var/log/wtmp文件）  
+
+查看系统日志：  
+1. /var/log/messages、/var/log/secure这两个日志记录软件运行状态与远程用户登录状态。history日志（.bash_history）  
+
+检查并关闭系统可疑进程:  
+1. 检查可疑进程的命令很多，如ps、top等，但是有时候只知道进程名称没法知道路径。这时候可以通过pidof命令查找正在运行的进程pid，如pidof sshd；然后在proc目录下找exe文件夹的内容ls -al /proc/xxxx/exe就可以得到完整的执行路径啦，还有文件句柄等ls -al /proc/xxxx/fd  
+2. 还可以指定端口或者tcp、udp协议找到进程pid，进而找到相关进程；fuser -n tcp 111 得到pid xxx，然后 ps -ef|grep xxx  
+
+检查文件系统的完好性:  
+  检查文件属性是否发生变化是验证文件系统完好性最简单、最直接的方法。  
+1. 比如对比入侵服务器和正常服务器上/bin/ls文件大小来验证文件是否被替换。  
+2. 使用rpm工具完成验证；rpm -Va 重点观察S和M标记表示和rpm原来包的文件不一样，S代表文件长度发生了变化，M代表文件访问权限和类型被修改，然后卸载这个rpm包重新安装，如果也被rootkit了就从别的系统复制一个rpm过来进行检测。  
+3. 通过chkrootkit和RKHunter来完成  
+
