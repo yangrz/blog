@@ -30,9 +30,9 @@ tags:
 .super<父类名>：指定了当前类的父类  
 .source<源文件名>：指定了当前类的源文件名  
 <font size=2 color=#000000>静态字段声明</font>  
-\#static fields   
+\#static fields  
 格式:.field<访问权限>static[修饰关键字]<字段名>:<字段类型>：字段  
-<font size=2 color=#000000>实例字段声明</font>   
+<font size=2 color=#000000>实例字段声明</font>  
 \#instance fields  
 .field private btnAnno:Landroid/widget/Button;&nbsp;&nbsp;  
 <font size=2 color=#000000>方法的声明</font>  
