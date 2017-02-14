@@ -3,7 +3,7 @@
 layout:     post
 title:      "静态分析android程序"
 subtitle:   " \"移动安全\""
-date:       2016-01-05 17:07:35
+date:       2017-01-05 17:07:35
 author:     "1r0nz"
 header-img: "img/post-bg-2015.jpg"
 tags:
