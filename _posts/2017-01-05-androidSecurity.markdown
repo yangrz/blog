@@ -27,8 +27,8 @@ tags:
 #### 二、smali文件格式  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在用apktool反编译apk文件后，会在反编译工程目录下生成一个smali文件夹，里面有很多smali文件了。下面是一些smali的常用语法格式  
 .class<访问权限>[修饰关键字]<类名>:指定当前的类名  
-.super<父类名>：指定了当前类的父类  
-.source<源文件名>：指定了当前类的源文件名  
+.super<父类名>:指定了当前类的父类  
+.source<源文件名>:指定了当前类的源文件名  
 #####静态字段声明#####   
 \#static fields   
 <font size=2 color=#000000>静态字段声明</font>  
