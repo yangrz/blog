@@ -29,7 +29,7 @@ tags:
 .class<访问权限>[修饰关键字]<类名>:指定当前的类名  
 .super<父类名>:指定了当前类的父类  
 .source<源文件名>:指定了当前类的源文件名  
-#### 静态字段声明</br>
+#### 静态字段声明
 \#static fields   
 <font size=2 color=#000000>静态字段声明</font>  
 \#static fields  
