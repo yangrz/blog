@@ -1,6 +1,6 @@
 #Site settings
 title: R0nzy Blog
-SEOTitle: 杨融泽的技术博客 | R0nzy Blog
+SEOTitle: 杨融泽的技术博客 | 1r0nz Blog
 header-img: img/home-bg.jpg
 email: yangrz@gmail.com
 description: ""
@@ -69,7 +69,7 @@ ga_domain: huangxuan.me
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
 sidebar-about-description: "没能力吃而求人，这是懦夫的表现，咬着牙，啃，走出一条属于你自己的大道，但有时命运是残酷的，你还没走上这条大道，就已经挂掉，所以，趁自己还没挂掉，还有很多的时候，加油一把，不用对得起国家，先对得起那些爱着你的人。 by evilcos余弦"
-sidebar-avatar: /img/avatar-hux.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: /img/avatar-1r0nz.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
 
@@ -82,7 +82,7 @@ featured-condition-size: 1             # A tag will be featured if the size of i
 # Friends
 friends: [
     {
-        title: "Ronzy Blog",
+        title: "1r0nz Blog",
         href: "https://yangrz.github.io/blog"
     }
 ]
