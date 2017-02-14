@@ -29,11 +29,10 @@ tags:
 .class<访问权限>[修饰关键字]<类名>:指定当前的类名  
 .super<父类名>:指定了当前类的父类  
 .source<源文件名>:指定了当前类的源文件名  
-#####静态字段声明#####   
+#####静态字段声明#####  
 \#static fields   
 <font size=2 color=#000000>静态字段声明</font>  
 \#static fields  
->>>>>>> f27b3b5d641baf7c24c899676cb7212e850042e4
 格式:.field<访问权限>static[修饰关键字]<字段名>:<字段类型>：字段  
 <font size=2 color=#000000>实例字段声明</font>  
 \#instance fields  
