@@ -35,7 +35,7 @@ tags:
 <font size=2 color=#000000>实例字段声明</font>   
 \#instance fields  
 .field private btnAnno:Landroid/widget/Button;&nbsp;&nbsp;  
-<font size=2 color=#000000>方法的声明</font>  
+<font size=2 color=#000000>方法的声明</font>  <br>
 \#direct methods  
 .method<访问权限>[修饰关键字]<方法原型>  
 &nbsp;&nbsp;&nbsp;&nbsp;<.locals>&nbsp;&nbsp;//指定使用局部变量的个数  
