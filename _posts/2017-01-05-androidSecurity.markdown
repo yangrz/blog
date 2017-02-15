@@ -82,7 +82,7 @@ tags:
 
 #### 三、android程序中的类  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;介绍完了smali文件格式，再来看看android程序反汇编后生成了哪些smali文件。  
-<font size=2 color=#000000>内部类</font>  
+`内部类`  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;java语言允许在一个类的内部定义另一个类，这种情况称为内部类。内部类也分很多情况，如成员内部类、静态内部类、方法内部类、匿名内部类。baksmali在反编译dex文件的时候，会为每个类单独生成一个smali文件，内部类作为一个独立的类，也拥有自己独立的smali文件，文件形式为“[外部类]$[内部类].smali”,例如下面的类。  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;&nbsp;Outer{  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class Inner{}  
@@ -97,7 +97,7 @@ baksmali反编译后会生成Outer.smali和Outer$Inner.smali两个文件。
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}  
 每往里面一层右边的数值就加1,如SecondInner类访问FirstInner类的引用为this$1,另外，synthetic属性表明它们是被编译器合成的、虚构的，并没有声明该字段。  
 在Dalvik虚拟机中，对于一个非静态的方法而言，会隐含的使用p0寄存器当作类的this引用。  
-<font size=2 color=#000000>监听器</font>  
+`监听器`  
 监听器在android应用开发中大量使用，如Button点击事件响应onClickListener、Button长按事件响应OnLongClickListener、ListView列表项点击事件OnItemSelectedListener等。监听器只使用一次，所以多用匿名内部类的形式来实现。  
 btn.setOnClickListener(new android.view.View.OnClickListener(){  
 &nbsp;&nbsp;&nbsp;&nbsp;@Override  
@@ -106,7 +106,7 @@ btn.setOnClickListener(new android.view.View.OnClickListener(){
 &nbsp;&nbsp;&nbsp;&nbsp;}  
 });  
 监听器的实质是接口，只需实现接口中相应的方法即可，如上例中实现的onClick方法。  
-<font size=2 color=#000000>注解类</font>  
+`注解类`  
 /#annotations  
 .annotation system Ldalvik/annotation/MemberClasses;  
 &nbsp;&nbsp;value={  
