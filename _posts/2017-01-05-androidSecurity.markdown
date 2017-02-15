@@ -38,13 +38,13 @@ tags:
 
 格式:.field<访问权限>static[修饰关键字]<字段名>:<字段类型>：字段  
 
-<font size=2 color=#000000>实例字段声明</font>  
+`实例字段声明`  
 
 \#instance fields  
 
 .field private btnAnno:Landroid/widget/Button;&nbsp;&nbsp;  
 
-<font size=2 color=#000000>方法的声明</font>  
+``方法的声明``  
 
 \#direct methods  
 
@@ -62,13 +62,13 @@ tags:
 
 .end method  
 
-<font size=2 color=#000000>接口的声明</font>  
+`接口的声明`  
 
 \#interface  
 
 .implements<接口名>  
 
-<font size=2 color=#000000>注释的声明</font>  
+`注释的声明`   
 
 \#annotations  
 
