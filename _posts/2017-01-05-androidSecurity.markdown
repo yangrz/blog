@@ -133,7 +133,8 @@ for循环特点：在进入循环前，需要先初始化循环计数器变量�
 while循环和do while循环，两者结构差异不大，只是循环条件判断的位置有所不同。  
 `switch语句`  
 有规律递增switch语句:packed-switch分支，pswitch_data_0指定case区域。有规律递增switch语句case区域指定初值并依次递增。  
-无规律递增switch语句:sparse_switch分支，sswitch_data_0制定case区域。case区域每个case 值——>case 标号的形式给出。  `trycatch语句`  
+无规律递增switch语句:sparse_switch分支，sswitch_data_0制定case区域。case区域每个case 值——>case 标号的形式给出 。  
+`trycatch语句`  
 代码中的try语句块使用try_start_开头的标号注明，以try_end_开头的标号结束。第一个try语句开头标号是try_start_0，结束标号为try_end_0。使用多个try语句块时标号名称后面的数值依次递增。  
 try_end_0下面使用".catch"指令制定处理到的异常类型与catch的标号，格式为:`.catch<异常类型>{<try 起始标号>..<try 结束标号>}<catch 标号>`
 
