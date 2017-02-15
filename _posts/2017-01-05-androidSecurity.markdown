@@ -32,19 +32,19 @@ tags:
   
 .source<源文件名>:指定了当前类的源文件名  
   
-`静态字段声明`  
+**静态字段声明**  
   
 \#static fields  
 
 格式:.field<访问权限>static[修饰关键字]<字段名>:<字段类型>：字段  
 
-`实例字段声明`  
+**实例字段声明**  
 
 \#instance fields  
 
 .field private btnAnno:Landroid/widget/Button;&nbsp;&nbsp;  
 
-``方法的声明``  
+**方法的声明**  
 
 \#direct methods  
 
@@ -62,13 +62,13 @@ tags:
 
 .end method  
 
-`接口的声明`  
+**接口的声明**  
 
 \#interface  
 
 .implements<接口名>  
 
-`注释的声明`   
+**注释的声明**   
 
 \#annotations  
 
@@ -82,7 +82,7 @@ tags:
 
 #### 三、android程序中的类  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;介绍完了smali文件格式，再来看看android程序反汇编后生成了哪些smali文件。  
-`内部类`  
+**内部类**  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;java语言允许在一个类的内部定义另一个类，这种情况称为内部类。内部类也分很多情况，如成员内部类、静态内部类、方法内部类、匿名内部类。baksmali在反编译dex文件的时候，会为每个类单独生成一个smali文件，内部类作为一个独立的类，也拥有自己独立的smali文件，文件形式为“[外部类]$[内部类].smali”,例如下面的类。  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;&nbsp;Outer{  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class Inner{}  
@@ -97,7 +97,7 @@ baksmali反编译后会生成Outer.smali和Outer$Inner.smali两个文件。
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}  
 每往里面一层右边的数值就加1,如SecondInner类访问FirstInner类的引用为this$1,另外，synthetic属性表明它们是被编译器合成的、虚构的，并没有声明该字段。  
 在Dalvik虚拟机中，对于一个非静态的方法而言，会隐含的使用p0寄存器当作类的this引用。  
-`监听器`  
+**监听器**  
 监听器在android应用开发中大量使用，如Button点击事件响应onClickListener、Button长按事件响应OnLongClickListener、ListView列表项点击事件OnItemSelectedListener等。监听器只使用一次，所以多用匿名内部类的形式来实现。  
 btn.setOnClickListener(new android.view.View.OnClickListener(){  
 &nbsp;&nbsp;&nbsp;&nbsp;@Override  
@@ -106,7 +106,7 @@ btn.setOnClickListener(new android.view.View.OnClickListener(){
 &nbsp;&nbsp;&nbsp;&nbsp;}  
 });  
 监听器的实质是接口，只需实现接口中相应的方法即可，如上例中实现的onClick方法。  
-`注解类`  
+**注解类**  
 /#annotations  
 .annotation system Ldalvik/annotation/MemberClasses;  
 &nbsp;&nbsp;value={  
@@ -119,23 +119,23 @@ EnclosingClass注解表明MainActivity$SNChecker作用于一个类，注解的va
 如果注解类在声明时使用了默认值，那么程序中会使用到AnnotationDefault注解。  
 Signature注解用于验证方法的签名。  
 方法的声明中使用throws关键字抛出异常，则会生成相应的Throws注解。  
-`自动生成的类`  
+**自动生成的类**  
 使用AndroidSDK默认生成的工程会自动添加一些类。这些类在程序发布后会仍然保留在apk文件中。  
 R类：R类中资源类都会独立生成一个类文件，在反编译出的代码中，可以发现R.smali、R$attr.smali、R$dimen.smali、R$drawable.smali、R$id.smali等  
 
 ---  
 
 #### 阅读smali代码结构  
-`循环语句`  
+**循环语句**  
 首先要知道常见的四种循环语句：迭代其循环、for循环、while循环、do while循环。  
 :goto_0表示循环开始，goto:goto_0表示这一轮循环结束跳转到goto_0开始的地方(这里的:goto_0表示的代码段标号)  
 for循环特点：在进入循环前，需要先初始化循环计数器变量，且它的值需要在循环体中更改。循环条件判断可以是条件跳转指令组成的合法语句。循环中使用goto指令来控制代码的流程。  
 while循环和do while循环，两者结构差异不大，只是循环条件判断的位置有所不同。  
-`switch语句`  
+**switch语句**  
 有规律递增switch语句:packed-switch分支，pswitch_data_0指定case区域。有规律递增switch语句case区域指定初值并依次递增。  
 无规律递增switch语句:sparse_switch分支，sswitch_data_0制定case区域。case区域每个case 值——>case 标号的形式给出 。  
-`trycatch语句`  
+**trycatch语句**  
 代码中的try语句块使用try_start_开头的标号注明，以try_end_开头的标号结束。第一个try语句开头标号是try_start_0，结束标号为try_end_0。使用多个try语句块时标号名称后面的数值依次递增。  
-try_end_0下面使用".catch"指令制定处理到的异常类型与catch的标号，格式为:`.catch<异常类型>{<try 起始标号>..<try 结束标号>}<catch 标号>`
+try_end_0下面使用".catch"指令制定处理到的异常类型与catch的标号，格式为:```.catch<异常类型>{<try 起始标号>..<try 结束标号>}<catch 标号>```
 
 
