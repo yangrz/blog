@@ -119,22 +119,21 @@ EnclosingClass注解表明MainActivity$SNChecker作用于一个类，注解的va
 如果注解类在声明时使用了默认值，那么程序中会使用到AnnotationDefault注解。  
 Signature注解用于验证方法的签名。  
 方法的声明中使用throws关键字抛出异常，则会生成相应的Throws注解。  
-<font size=2 color=#000000>自动生成的类</font>  
+`自动生成的类`  
 使用AndroidSDK默认生成的工程会自动添加一些类。这些类在程序发布后会仍然保留在apk文件中。  
 R类：R类中资源类都会独立生成一个类文件，在反编译出的代码中，可以发现R.smali、R$attr.smali、R$dimen.smali、R$drawable.smali、R$id.smali等  
 
 ---  
 
 #### 阅读smali代码结构  
-<font size=2 color=#000000>循环语句</font>  
+`循环语句`  
 首先要知道常见的四种循环语句：迭代其循环、for循环、while循环、do while循环。  
 :goto_0表示循环开始，goto:goto_0表示这一轮循环结束跳转到goto_0开始的地方(这里的:goto_0表示的代码段标号)  
 for循环特点：在进入循环前，需要先初始化循环计数器变量，且它的值需要在循环体中更改。循环条件判断可以是条件跳转指令组成的合法语句。循环中使用goto指令来控制代码的流程。  
 while循环和do while循环，两者结构差异不大，只是循环条件判断的位置有所不同。  
-<font size=2 color=#000000>switch语句</font>  
+`switch语句`  
 有规律递增switch语句:packed-switch分支，pswitch_data_0指定case区域。有规律递增switch语句case区域指定初值并依次递增。  
-无规律递增switch语句:sparse_switch分支，sswitch_data_0制定case区域。case区域每个case 值——>case 标号的形式给出。  
-<font size=2 color=#000000>trycatch语句</font>  
+无规律递增switch语句:sparse_switch分支，sswitch_data_0制定case区域。case区域每个case 值——>case 标号的形式给出。  `trycatch语句`  
 代码中的try语句块使用try_start_开头的标号注明，以try_end_开头的标号结束。第一个try语句开头标号是try_start_0，结束标号为try_end_0。使用多个try语句块时标号名称后面的数值依次递增。  
 try_end_0下面使用".catch"指令制定处理到的异常类型与catch的标号，格式为:`.catch<异常类型>{<try 起始标号>..<try 结束标号>}<catch 标号>`
 
