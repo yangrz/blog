@@ -5,7 +5,7 @@ title:      "根据smali源码静态分析android程序"
 subtitle:   " \"移动安全\""
 date:       2017-01-05 17:07:35
 author:     "1r0nz"
-header-img: "img/post-bg-2015.jpg"
+header-img: "img/post-bg-unix-linux.jpg"
 tags:
     - 安全研究
 
