@@ -32,30 +32,50 @@ tags:
   
 .source<源文件名>:指定了当前类的源文件名  
   
-##### 静态字段声明  
+`静态字段声明`  
   
-static fields  
+\#static fields  
 
 格式:.field<访问权限>static[修饰关键字]<字段名>:<字段类型>：字段  
+
 <font size=2 color=#000000>实例字段声明</font>  
+
 \#instance fields  
+
 .field private btnAnno:Landroid/widget/Button;&nbsp;&nbsp;  
-<font size=2 color=#000000>方法的声明</font>  <br>
+
+<font size=2 color=#000000>方法的声明</font>  
+
 \#direct methods  
+
 .method<访问权限>[修饰关键字]<方法原型>  
+
 &nbsp;&nbsp;&nbsp;&nbsp;<.locals>&nbsp;&nbsp;//指定使用局部变量的个数  
+
 &nbsp;&nbsp;&nbsp;&nbsp;[parameter]&nbsp;&nbsp;//指定了方法的参数  
+
 &nbsp;&nbsp;&nbsp;&nbsp;[.prologue]&nbsp;&nbsp;//指定了代码的开始处  
+
 &nbsp;&nbsp;&nbsp;&nbsp;[.line]&nbsp;&nbsp;//该处指令在源代码中的行号  
+
 &nbsp;&nbsp;&nbsp;&nbsp;<代码体>  
+
 .end method  
+
 <font size=2 color=#000000>接口的声明</font>  
+
 \#interface  
+
 .implements<接口名>  
+
 <font size=2 color=#000000>注释的声明</font>  
-\#annotations
+
+\#annotations  
+
 .annotation[注释属性]<注解类名>  
+
 &nbsp;&nbsp;&nbsp;&nbsp;[注解字段=值]  
+
 .end annotation  
 
 ---  
