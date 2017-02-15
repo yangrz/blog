@@ -76,14 +76,34 @@ sidebar-avatar: /blog/img/avatar-1r0nz.jpg      # use absolute URL, seeing it's 
 
 # Featured Tags
 featured-tags: true                     # whether or not using Feature-Tags
-featured-condition-size: 1             # A tag will be featured if the size of it is more than this condition value
+featured-condition-size: 0             # A tag will be featured if the size of it is more than this condition value
 
 
 
 # Friends
 friends: [
     {
-        title: "1r0nz Blog",
-        href: "https://yangrz.github.io/blog"
+        title: "cnnvd国家信息安全漏洞库",
+        href: "http://www.cnnvd.org.cn/"
+    }
+    {
+        title: "Zoomeye钟馗之眼",
+        href: "https://www.zoomeye.org/"
+    }
+    {
+        title: "FOFA网络空间搜索引擎",
+        href: "https://fofa.so/"
+    }
+    {
+        title: "看雪安全论坛",
+        href: "http://bbs.pediy.com/"
+    }
+     {
+        title: "阿里安全应急响应中心",
+        href: "https://security.alibaba.com/"
+    }
+    {
+        title: "京东安全应急响应中心",
+        href: "https://security.jd.com/"
     }
 ]

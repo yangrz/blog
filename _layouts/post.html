@@ -51,9 +51,9 @@ layout: default
 
                 <hr>
 
-                {% if site.duoshuo_share && site.duoshuo_username %}
+                <!-- {% if site.duoshuo_share && site.duoshuo_username %} -->
                 <!-- 多说 Share start -->
-                </style>
+               <!--  </style>
                 <div class="ds-share"
                     style="text-align: right"
                     data-thread-key="{{page.id}}"
@@ -72,10 +72,10 @@ layout: default
                       </div>
                     </div>
                 <hr>
-                </div>
+                </div> -->
                 <!-- 多说 Share end-->
-                {% endif %}
-
+                <!-- {% endif %}
+ -->
 
                 <ul class="pager">
                     {% if page.previous.url %}
@@ -91,26 +91,26 @@ layout: default
                 </ul>
 
 
-                {% if site.duoshuo_username %}
+                <!-- {% if site.duoshuo_username %} -->
                 <!-- 多说评论框 start -->
-                <div class="comment">
+                <!-- <div class="comment">
                     <div class="ds-thread"
                         data-thread-key="{{page.id}}"
                         data-title="{{page.title}}"
                         data-url="{{site.url}}{{site.baseurl}}{{page.url}}" >
                     </div>
-                </div>
+                </div> -->
                 <!-- 多说评论框 end -->
-                {% endif %}
+               <!--  {% endif %} -->
 
-                {% if site.disqus_username %}
+                <!-- {% if site.disqus_username %} -->
                 <!-- disqus 评论框 start -->
-                <div class="comment">
+               <!--  <div class="comment">
                     <div id="disqus_thread" class="disqus-thread"></div>
-                </div>
+                </div> -->
                 <!-- disqus 评论框 end -->
-                {% endif %}
-
+                <!-- {% endif %}
+ -->
             </div>
 
     <!-- Sidebar Container -->
@@ -139,7 +139,7 @@ layout: default
                 <!-- Friends Blog -->
                 {% if site.friends %}
                 <hr>
-                <h5>FRIENDS</h5>
+                <h5>友情链接</h5>
                 <ul class="list-inline">
                     {% for friend in site.friends %}
                         <li><a href="{{friend.href}}">{{friend.title}}</a></li>
@@ -151,9 +151,9 @@ layout: default
     </div>
 </article>
 
-{% if site.duoshuo_username %}
+<!-- {% if site.duoshuo_username %} -->
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
+<!--<script type="text/javascript">
     // dynamic User by Hux
     var _user = '{{site.duoshuo_username}}';
 
@@ -169,12 +169,12 @@ layout: default
     })();
 </script>
 <!-- 多说公共JS代码 end -->
-{% endif %}
+<!-- {% endif %} -->
 
 
-{% if site.disqus_username %}
+<!-- {% if site.disqus_username %} -->
 <!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
+<!--<script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "{{site.disqus_username}}";
     var disqus_identifier = "{{page.id}}";
@@ -187,7 +187,7 @@ layout: default
     })();
 </script>
 <!-- disqus 公共JS代码 end -->
-{% endif %}
+<!-- {% endif %} -->
 
 
 {% if site.anchorjs %}
