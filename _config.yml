@@ -82,28 +82,36 @@ featured-condition-size: 0             # A tag will be featured if the size of i
 
 # Friends
 friends: [
+    # {
+    #     title: "cnnvd国家信息安全漏洞库",
+    #     href: "http://www.cnnvd.org.cn/"
+    # }
+    # {
+    #     title: "Zoomeye钟馗之眼",
+    #     href: "https://www.zoomeye.org/"
+    # }
+    # {
+    #     title: "FOFA网络空间搜索引擎",
+    #     href: "https://fofa.so/"
+    # }
+    # {
+    #     title: "看雪安全论坛",
+    #     href: "http://bbs.pediy.com/"
+    # }
+    #  {
+    #     title: "阿里安全应急响应中心",
+    #     href: "https://security.alibaba.com/"
+    # }
+    # {
+    #     title: "京东安全应急响应中心",
+    #     href: "https://security.jd.com/"
+    # }
+       {
+      title: "cnnvd",
+      href: "http://www.cnnvd.org.cn/"
+      }
     {
-        title: "cnnvd国家信息安全漏洞库",
-        href: "http://www.cnnvd.org.cn/"
-    }
-    {
-        title: "Zoomeye钟馗之眼",
+      title: "Zoomeye",
         href: "https://www.zoomeye.org/"
-    }
-    {
-        title: "FOFA网络空间搜索引擎",
-        href: "https://fofa.so/"
-    }
-    {
-        title: "看雪安全论坛",
-        href: "http://bbs.pediy.com/"
-    }
-     {
-        title: "阿里安全应急响应中心",
-        href: "https://security.alibaba.com/"
-    }
-    {
-        title: "京东安全应急响应中心",
-        href: "https://security.jd.com/"
     }
 ]
