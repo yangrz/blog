@@ -4,7 +4,7 @@ title:      "C++学习笔记"
 subtitle:   " \"C++中的左值与右值\""
 date:       2016-08-03 13:14:00
 author:     "R0nzy"
-header-img: "img/post-bg-2015.jpg"
+header-img: "img/post-bg-unix-linux.jpg"
 tags:
     - C++
 ---

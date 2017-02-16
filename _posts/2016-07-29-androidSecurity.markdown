@@ -5,7 +5,7 @@ title:      "apk静态分析"
 subtitle:   " \"认识apk文件\""
 date:       2016-07-29 19:30:00
 author:     "R0nzy"
-header-img: "img/post-bg-2015.jpg"
+header-img: "img/post-bg-unix-linux.jpg"
 tags:
     - 客户端安全
 ---

@@ -4,7 +4,7 @@ title:      "Linux安全运维学习笔记"
 subtitle:   " \"安全运维\""
 date:       2016-09-30 20:18:00
 author:     "R0nzy"
-header-img: "img/post-bg-2015.jpg"
+header-img: "img/post-bg-unix-linux.jpg"
 tags:
     - 安全研究
 ---
