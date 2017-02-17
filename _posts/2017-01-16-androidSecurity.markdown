@@ -63,5 +63,5 @@ tags:
 
 * __段定义__  
 c语言所定义的全局变量和常量都都会编译到.data下，常量数据放在.rodata的只读数据段中，代码放到.text数据段中，这里的代码才可以执行。arm指定段的格式为：  
-.section name \[,"flag"\[,%type\[,flag_specific_arguments\]\]\]
+`.section name \[,"flag"\[,%type\[,flag_specific_arguments\]\]\]`
 
