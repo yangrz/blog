@@ -11,10 +11,8 @@ tags:
 
 ---
 
-[TOC]
----  
 
-[TOC]
+---  
 #### 前言  
 &nbsp;&nbsp;&nbsp;&nbsp;传统android开发倾向于将所有代码部署在android应用层，这种方式在面对软件安全威胁的情况下时比较容易破解。将重要的代码使用android ndk原生层的方式实现，由于ndk原生层代码逆向原本难度较高，使得文件无法轻易被破解。因此，理解和掌握android原生层运行机制对逆向水平的提高有比较大的帮助。  
 
@@ -46,16 +44,16 @@ tags:
 #### arm的程序结构  
 &nbsp;&nbsp;&nbsp;&nbsp;组成：处理器架构定义、数据段、代码段和main函数。  
 * __处理器架构定义__  
-```.arch  armv5te  
-	.fpu  softvfp  
-	.eabi_attribute  20,1  
-	.eabi_attribute  21,1  
-	.eabi_attribute  23,3  
-	.eabi_attribute  24,1  
-	.eabi_attribute  25,1  
-	.eabi_attribute  26,2  
-	.eabi_attribute  30,6  
-	.eabi_attribute  18,4```
+`.arch  armv5te`  
+`.fpu  softvfp`  
+`.eabi_attribute  20,1`  
+`.eabi_attribute  21,1`  
+`.eabi_attribute  23,3`  
+`.eabi_attribute  24,1`  
+`.eabi_attribute  25,1`  
+`.eabi_attribute  26,2`  
+`.eabi_attribute  30,6`  
+`.eabi_attribute  18,4`
 这些指令制定了程序使用的处理器架构、协处理器类型与接口的一些属性。  
 .arch 制定了arm处理器架构  
 .fpu 指定了协处理器的类型  
