@@ -55,7 +55,7 @@ tags:
         .eabi_attribute  25,1  
         .eabi_attribute  26,2  
         .eabi_attribute  30,6  
-        .eabi_attribute  18,4  
+        .eabi_attribute  18,4	
 这些指令制定了程序使用的处理器架构、协处理器类型与接口的一些属性。  
 .arch 制定了arm处理器架构  
 .fpu 指定了协处理器的类型  
