@@ -58,6 +58,12 @@ tags:
 .arch 制定了arm处理器架构  
 .fpu 指定了协处理器的类型  
 .eabi_attribute 指定了一些接口类型  
+```arch  armv5te  
+.fpu  softvfp  
+.eabi_attribute  20,1  
+.eabi_attribute  21,1  
+.eabi_attribute  23,3  
+.eabi_attribute  24,1```  
 
 * __段定义__  
 c语言所定义的全局变量和常量都都会编译到.data下，常量数据放在.rodata的只读数据段中，代码放到.text数据段中，这里的代码才可以执行。arm指定段的格式为：  
