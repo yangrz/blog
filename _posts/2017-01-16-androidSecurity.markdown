@@ -45,11 +45,23 @@ tags:
 
 #### arm的程序结构  
 &nbsp;&nbsp;&nbsp;&nbsp;组成：处理器架构定义、数据段、代码段和main函数。  
-##### 处理器架构定义  
+* __处理器架构定义__  
 	.arch  armv5te  
         .fpu  softvfp  
         .eabi_attribute  20,1  
         .eabi_attribute  21,1  
         .eabi_attribute  23,3  
-        .eabi_attribute  24,1	
+        .eabi_attribute  24,1  
+        .eabi_attribute  25,1  
+        .eabi_attribute  26,2  
+        .eabi_attribute  30,6  
+        .eabi_attribute  18,4  
+这些指令制定了程序使用的处理器架构、协处理器类型与接口的一些属性。  
+.arch 制定了arm处理器架构  
+.fpu 指定了协处理器的类型  
+.eabi_attribute 指定了一些接口类型  
+
+* __段定义__  
+c语言所定义的全局变量和常量都都会编译到.data下，常量数据放在.rodata的只读数据段中，代码放到.text数据段中，这里的代码才可以执行。arm指定段的格式为：  
+.section name \[,"flag"\[,%type\[,flag_specific_arguments\]\]\]
 
