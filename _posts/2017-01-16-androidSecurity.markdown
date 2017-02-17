@@ -63,5 +63,10 @@ tags:
 
 * __段定义__  
 c语言所定义的全局变量和常量都都会编译到.data下，常量数据放在.rodata的只读数据段中，代码放到.text数据段中，这里的代码才可以执行。arm指定段的格式为：  
-`.section name \[,"flag"\[,%type\[,flag_specific_arguments\]\]\]`
+`.section name [,"flag"[,%type[,flag_specific_arguments]]]`  
+其中name为段名，flags为段的属性如读、写、可执行等，type指定了段的类型，如proghits和iaoshi段中包含有数据、note表示段中包含的数据非程序本身使用，flag_specific_arguments指定了一些平台相关的参数。  
+例如：.`section .note.GNU-stack,"",%progbits` ，定义.note.GNU.stack段，作用是禁止生成可执行堆栈，保护代码安全，防止堆栈溢出漏洞带来的危害。  
+
+* __注释与标号__  
+注释：/\*...\*/
 
