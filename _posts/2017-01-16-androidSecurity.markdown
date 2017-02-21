@@ -7,7 +7,7 @@ date:       2017-01-16 19:25:35
 author:     "1r0nz"
 header-img: "img/post-bg-unix-linux.jpg"
 tags:
-    - 安全研究
+    - 基础
 
 ---
 
