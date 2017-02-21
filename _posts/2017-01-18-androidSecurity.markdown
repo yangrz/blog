@@ -7,7 +7,7 @@ date:       2017-01-18 15:13:35
 author:     "1r0nz"
 header-img: "img/post-bg-unix-linux.jpg"
 tags:
-    - 基础
+    - C++、反汇编、基础
 
 ---
 
