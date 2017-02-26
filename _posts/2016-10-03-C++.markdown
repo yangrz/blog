@@ -1,0 +1,12 @@
+--- 
+
+layout:     post
+title:      "C++函数的工作原理"
+subtitle:   " \"C++反汇编学习笔记\""
+date:       2016-10-03 16:35:35
+author:     "1r0nz"
+header-img: "img/post-bg-unix-linux.jpg"
+tags:
+    - C++、反汇编、基础
+
+---
