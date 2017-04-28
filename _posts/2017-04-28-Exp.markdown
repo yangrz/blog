@@ -1,13 +1,13 @@
 --- 
 
 layout:     post
-title:      ""
-subtitle:   " \"利用NSA大杀器EternalBlue（永恒之蓝）结合MSF入侵XP主机\""
+title:      "利用NSA大杀器EternalBlue（永恒之蓝）结合MSF入侵WinXP系统"
+subtitle:   " \"安全技术\""
 date:       2017-04-28 13:36:25
 author:     "1r0nz"
 header-img: "img/hack.jpg"
 tags:
-    - 安全
+    - 安全研究
 
 ---
 
