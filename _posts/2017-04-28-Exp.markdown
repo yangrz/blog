@@ -1,0 +1,104 @@
+--- 
+
+layout:     post
+title:      ""
+subtitle:   " \"利用NSA大杀器EternalBlue（永恒之蓝）结合MSF入侵XP主机\""
+date:       2017-04-28 13:36:25
+author:     "1r0nz"
+header-img: "img/hack.jpg"
+tags:
+    - 安全
+
+---
+
+#### 前言 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;前阵子NSA泄露出的工具着实让windows各类系统汗颜了一把，win系列几乎统统中招，从这个月十几号爆出到现在已经快二十天了，估计各云服务器提供商的运维狗们都忙着给服务器升级吧。。。  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NSA工具包主要分为三大部分，其中windows文件夹是存放攻击exp和payload的地方，swift是nsa组织监控的一些银行报表，oddobj是一些通用后门。在利用工具中，最具威胁力的当属EternalBlue了，网上利用过程数不胜数，这里我也用虚拟机折腾了下。  
+
+--- 
+
+#### 环境搭建  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;win2003攻击主机，ip：192.168.155.7  
+
+![1](http://i2.muimg.com/567571/daf31bef4b63c255.png)  
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;kali攻击机，ip：192.168.155.8  
+
+![2](http://i2.muimg.com/567571/7f96ce95e3b6aff2.png)  
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;winXP靶机，ip：192.168.155.9  
+
+![3](http://i2.muimg.com/567571/45a3bc22f2f3aee0.png)  
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;另外，使用EternalBlue要求win2003攻击机上具有python的运行环境，这里用的Python2.6和PyWin32对于2.6的windows版，配置环境变量啥的就不多说了。同时，在github上clone一个NSA工具包到win2003的攻击机上  
+`git clone https://github.com/x0rz/EQGRP_Lost_in_Translation.git`  
+
+---  
+
+#### 利用过程分析
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在win2003攻击机中，首先解压nsa工具包，进入windows文件夹底下，创建listeningposts文件夹，运行fb.py文件进入攻击模块。  
+
+![4](http://i1.piimg.com/567571/16ddbae81af44697.png)  
+
+首先会让你输入攻击靶机地址和反馈主机地址。  
+
+![5](http://i1.piimg.com/567571/16ddbae81af44697.png)  
+
+日志目录随便指定一个，工程文件夹用它默认的就行。  
+
+![6](http://i1.piimg.com/567571/16ddbae81af44697.png)  
+
+选择好后框架会带你进入攻击环境，这里选择使用EternalBlue的payload探测服务器是否包含对应的SMB服务协议漏洞。  
+
+![7](http://i4.buimg.com/567571/b06728f475f7b777.png)  
+
+之后攻击环境会向你确认你攻击所使用的各项参数。  
+
+![8](http://i4.buimg.com/567571/2186a128da8acb7c.png)  
+
+选择攻击靶机的系统类型，这里选XP。  
+
+![9](http://i4.buimg.com/567571/682209b5fc46e8b8.png)  
+
+Fuzz过程可以选它自带的Fuzzbunch插件。  
+
+![10](http://i1.piimg.com/567571/4c3cc2ffc0abf7d2.png)  
+
+经过一系列确认后开始对靶机进行SMB服务的漏洞验证了。  
+
+![11](http://i1.piimg.com/567571/4c3cc2ffc0abf7d2.png)  
+
+无论验证是否成功都会有具体提示。  
+
+![12](http://i4.buimg.com/567571/20e4915806316fde.png)  
+
+验证完就是具体的系统入侵阶段了，这里使用Doublepulsar的exploit脚本拿到系统权限。  
+
+![13](http://i4.buimg.com/567571/20e4915806316fde.png)  
+
+之后会让你选择攻击服务类型和被攻击靶机的处理器架构，这里按需输入。  
+
+![14](http://i1.piimg.com/567571/ba41ca357a3aa89c.png)  
+
+最后来到攻击所使用的方式选取阶段中，这里选择dll进程注入的方式，之后让你指定攻击的dll文件。  
+
+![15](http://i4.buimg.com/567571/f394c161cb285599.png)  
+
+在kali攻击机中生成支持xp系统的dll攻击payload，这里为s.dll，并将s.dll放入win2003攻击机中。  
+
+![16](http://i2.muimg.com/567571/ce644980f7bf3a8f.png)  
+
+![17](http://i2.muimg.com/567571/ce644980f7bf3a8f.png)  
+
+同时进入msfconsole，运行指定的exploit监听win2003攻击机反馈的数据。  
+
+![18](http://i4.buimg.com/567571/e1dd9260e78ce5fe.png)  
+
+确定dll文件路径，最终执行攻击。  
+
+![19](http://i4.buimg.com/567571/b75c08cacfc822e2.png)  
+
+攻击成功后，会在kali攻击机中得到靶机的shell后门。  
+
+
+---  
