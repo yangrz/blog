@@ -38,7 +38,7 @@ tags:
 #### 利用过程分析
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在win2003攻击机中，首先解压nsa工具包，进入windows文件夹底下，创建listeningposts文件夹，运行fb.py文件进入攻击模块。  
 
-![4](http://i1.piimg.com/567571/16ddbae81af44697.png)  
+![4](http://i2.muimg.com/567571/54a654d8ac17d944.png)  
 
 首先会让你输入攻击靶机地址和反馈主机地址。  
 
@@ -46,7 +46,7 @@ tags:
 
 日志目录随便指定一个，工程文件夹用它默认的就行。  
 
-![6](http://i1.piimg.com/567571/16ddbae81af44697.png)  
+![6](http://i2.muimg.com/567571/c5627d2424c4a849.png)  
 
 选择好后框架会带你进入攻击环境，这里选择使用EternalBlue的payload探测服务器是否包含对应的SMB服务协议漏洞。  
 
@@ -65,40 +65,42 @@ Fuzz过程可以选它自带的Fuzzbunch插件。
 ![10](http://i1.piimg.com/567571/4c3cc2ffc0abf7d2.png)  
 
 经过一系列确认后开始对靶机进行SMB服务的漏洞验证了。  
-
+  
 ![11](http://i1.piimg.com/567571/4c3cc2ffc0abf7d2.png)  
-
+  
+![12](http://i1.piimg.com/567571/2c2160516022f702.png) 
+  
 无论验证是否成功都会有具体提示。  
-
-![12](http://i4.buimg.com/567571/20e4915806316fde.png)  
-
-验证完就是具体的系统入侵阶段了，这里使用Doublepulsar的exploit脚本拿到系统权限。  
 
 ![13](http://i4.buimg.com/567571/20e4915806316fde.png)  
 
-之后会让你选择攻击服务类型和被攻击靶机的处理器架构，这里按需输入。  
+验证完就是具体的系统入侵阶段了，这里使用Doublepulsar的exploit脚本拿到系统权限。  
 
-![14](http://i1.piimg.com/567571/ba41ca357a3aa89c.png)  
+![14](http://i4.buimg.com/567571/d2dce2bdb4f95b85.png)  
+
+之后会让你选择攻击服务类型和被攻击靶机的处理器架构，这里按需输入。  
+  
+![15](http://i1.piimg.com/567571/ba41ca357a3aa89c.png)  
 
 最后来到攻击所使用的方式选取阶段中，这里选择dll进程注入的方式，之后让你指定攻击的dll文件。  
-
-![15](http://i4.buimg.com/567571/f394c161cb285599.png)  
-
+  
+![16](http://i4.buimg.com/567571/f394c161cb285599.png)  
+  
 在kali攻击机中生成支持xp系统的dll攻击payload，这里为s.dll，并将s.dll放入win2003攻击机中。  
 
-![16](http://i2.muimg.com/567571/ce644980f7bf3a8f.png)  
+![17](http://i4.buimg.com/567571/d04c4f335896a7ae.png)  
 
-![17](http://i2.muimg.com/567571/ce644980f7bf3a8f.png)  
+![18](http://i2.muimg.com/567571/ce644980f7bf3a8f.png)  
 
 同时进入msfconsole，运行指定的exploit监听win2003攻击机反馈的数据。  
-
-![18](http://i4.buimg.com/567571/e1dd9260e78ce5fe.png)  
-
+  
+![19](http://i1.piimg.com/567571/ba41ca357a3aa89c.png)  
+  
+![20](http://i4.buimg.com/567571/e1dd9260e78ce5fe.png)  
+  
 确定dll文件路径，最终执行攻击。  
 
-![19](http://i4.buimg.com/567571/b75c08cacfc822e2.png)  
+![21](http://i4.buimg.com/567571/b75c08cacfc822e2.png)  
 
 攻击成功后，会在kali攻击机中得到靶机的shell后门。  
-
-
----  
+  
