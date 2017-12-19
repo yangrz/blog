@@ -2,14 +2,13 @@
 
 layout:     post
 title:      "Hash长度拓展攻击"
-subtitle:   " \"ELK\""
+subtitle:   " \"CTF\""
 date:       2017-12-19 20:45:54
 author:     "y1r0nz"
 header-img: "img/hack.jpg"
 tags:
     - CTF
-
---- 
+---
 
 
 
