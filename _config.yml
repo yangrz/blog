@@ -68,7 +68,7 @@ ga_domain: huangxuan.me
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "专注于网络安全，web狗、广工信息安全硕士在读，现在主要在啃代码安全审计和android移动安全
+sidebar-about-description: "专注于网络安全，web狗、毕业于广东工业大学，现在主要在啃代码安全审计和android移动安全
 "
 sidebar-avatar: /blog/img/avatar-1r0nz.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
