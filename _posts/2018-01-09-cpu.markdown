@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "浅谈处理器级spectre attack及poc分析"
+title:      "浅谈处理器级Spectre Attack及Poc分析"
 subtitle:   " \"cpu内核\""
 date:       2018-01-09 09:10:25
 author:     "y1r0nz"
@@ -69,6 +69,8 @@ if(x < array1_size)
 #### 0x03 完整poc分析
 
 说完漏洞利用过程我们再来通读一下完整的poc代码。代码所有解释均在注释中有相关标注。
+
+
 
 ```C
 #include <stdio.h>
@@ -200,6 +202,8 @@ int main(int argc, const char **argv) {
 }
 ```
 
+
+
 在ubuntu 14.04 x86-64 上运行结果见下图：
 
 ![meltdown1](/Users/y1r0nz/Downloads/meltdown1.png)
@@ -214,7 +218,7 @@ int main(int argc, const char **argv) {
 
   根据微软官方发布的补丁，需要用户使用windows自带的Powershell验证自己client是否存在speculative excution 分为以下几步：
 
-  1. 首先需要下载微软官方的powershell验证module包   <https://aka.ms/SpeculationControlPS>
+  1. 首先需要下载微软官方的powershell验证module包  [https://aka.ms/SpeculationControlPS](https://aka.ms/SpeculationControlPS) 
 
   2. 使用管理员权限打开powershell，解压下载的文件定位到文件目录，执行如下图所示命令验证是否存在风险
 
@@ -257,17 +261,17 @@ int main(int argc, const char **argv) {
      sudo apt-get dist-upgrade
      ```
 
-     可以参考https://usn.ubuntu.com/usn/usn-3524-1/、https://wiki.ubuntu.com/Security/Upgrades
+     可以参考[https://usn.ubuntu.com/usn/usn-3524-1/](https://usn.ubuntu.com/usn/usn-3524-1/)、[https://wiki.ubuntu.com/Security/Upgrades](https://wiki.ubuntu.com/Security/Upgrades)
 
-
+     ​
 
 #### 0x05 参考文献
 
-1. http://www.antiy.com/response/Meltdown+CPU-faq.html 《Meltdown攻击与CPU体系结构的简明FAQ》
+1. [http://bbs.antiy.cn/forum.php?mod=viewthread&tid=77670&extra=page%3D1](http://www.antiy.com/response/Meltdown+CPU-faq.html) 《Meltdown攻击与CPU体系结构的简明FAQ》
 
-2. https://zh.wikipedia.org/wiki/%E4%B9%B1%E5%BA%8F%E6%89%A7%E8%A1%8C 乱序执行 from WiKi
-3. https://spectreattack.com/spectre.pdf?spm=a313e.7916648.0.0.42867d79FbbHHi&file=spectre.pdf 《Spectre Attack: Exploiting Speculative Execution》
-4. http://bbs.antiy.cn/forum.php?mod=viewthread&tid=77670&extra=page%3D1 译文版 《Spectre Attack: Exploiting Speculative Execution》by 安天
-5. https://lwn.net/Articles/738975/  KAISER: hiding the kernel from user space
-6. https://support.microsoft.com/en-us/help/4073119/protect-against-speculative-execution-side-channel-vulnerabilities-in Windows Client Guidance for IT Pros to protect against speculative execution side-channel vulnerabilities
-7. https://github.com/hannob/meltdownspectre-patches github上有关漏洞厂商相关跟踪信息的repo
+2. [http://bbs.antiy.cn/forum.php?mod=viewthread&tid=77670&extra=page%3D1](https://zh.wikipedia.org/wiki/%E4%B9%B1%E5%BA%8F%E6%89%A7%E8%A1%8C) 乱序执行 from WiKi
+3. [http://bbs.antiy.cn/forum.php?mod=viewthread&tid=77670&extra=page%3D1](https://spectreattack.com/spectre.pdf?spm=a313e.7916648.0.0.42867d79FbbHHi&file=spectre.pdf) 《Spectre Attack: Exploiting Speculative Execution》
+4. [http://bbs.antiy.cn/forum.php?mod=viewthread&tid=77670&extra=page%3D1](http://bbs.antiy.cn/forum.php?mod=viewthread&tid=77670&extra=page%3D1) 译文版 《Spectre Attack: Exploiting Speculative Execution》by 安天
+5. [https://lwn.net/Articles/738975/](https://lwn.net/Articles/738975/)  KAISER: hiding the kernel from user space
+6. [https://support.microsoft.com/en-us/help/4073119/protect-against-speculative-execution-side-channel-vulnerabilities-in](https://support.microsoft.com/en-us/help/4073119/protect-against-speculative-execution-side-channel-vulnerabilities-in) Windows Client Guidance for IT Pros to protect against speculative execution side-channel vulnerabilities
+7. [https://github.com/hannob/meltdownspectre-patches](https://github.com/hannob/meltdownspectre-patches) github上有关漏洞厂商相关跟踪信息的repo
