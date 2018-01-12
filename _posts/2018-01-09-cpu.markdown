@@ -202,7 +202,7 @@ int main(int argc, const char **argv) {
 
 在ubuntu 14.04 x86-64 上运行结果见下图：
 
-![meltdown2](/Users/y1r0nz/Downloads/meltdown2.png)
+![meltdown1](/Users/y1r0nz/Downloads/meltdown1.png)
 
 
 
