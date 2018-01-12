@@ -64,22 +64,20 @@ if(x < array1_size)
 
 ​	代码片段中首先判断了用户进程是否越界访问数组的非法访问区域。在某种程度上，这种方式防止了处理器越界访问非法访问的敏感数据区域。然而，在乱序执行的条件下，假设攻击者可以操纵x的值（对应array[x] = k）泄露单个byte的内存值，此时array1_size和array2没有cache到缓存中，但是k已经存入cache缓存了。攻击者此时可以让cpu多次执行判断为真的指令，执行多次后cpu会将下一条指令预见性的读取，这时候只要攻击者突然改变x为非法访问内存值，则可以让cpu误读取非法区域中的值，达到泄露非法地址内存信息的目的。
 
-
-
 #### 0x03 完整poc分析
 
 说完漏洞利用过程我们再来通读一下完整的poc代码。代码所有解释均在注释中有相关标注。
 
 ```c
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#ifdef _MSC_VER     /*根据处理器架构（x86或者x64）来使用对应的宏包含的库 */
-#include <intrin.h> /* flush缓存库，主要用来调用_mm_clflush（刷新缓存）和__rdtscp函数 */
-#pragma optimize("gt",on)
-#else
-#include <x86intrin.h> /* for rdtscp and clflush */
-#endif
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <stdint.h> 
+#ifdef _MSC_VER     /*根据处理器架构（x86或者x64）来使用对应的宏包含的库 */ 
+#include <intrin.h> /* flush缓存库，主要用来调用_mm_clflush（刷新缓存）和__rdtscp函数 */ 
+#pragma optimize("gt",on) 
+#else 
+#include <x86intrin.h> /* for rdtscp and clflush */ 
+#endif 
 
 /********************************************************************
  Victim code.
@@ -203,11 +201,7 @@ int main(int argc, const char **argv) {
         }
         return (0);
 }
-
-
 ```
-
-
 
 在ubuntu 14.04 x86-64 上运行结果见下图：
 
@@ -249,7 +243,7 @@ int main(int argc, const char **argv) {
 
   1. 下载github上面的shell验证脚本
 
-     ```shell
+     ```she l l
      git clone https://github.com/paboldin/meltdown-exploit.git
      ```
 
@@ -266,8 +260,8 @@ int main(int argc, const char **argv) {
      sudo apt-get dist-upgrade
      ```
 
-     可以参考 
-     [https://usn.ubuntu.com/usn/usn-3524-1/](https://usn.ubuntu.com/usn/usn-3524-1/)、
+     具体可以参考下面两篇进行升级 
+     [https://usn.ubuntu.com/usn/usn-3524-1/](https://usn.ubuntu.com/usn/usn-3524-1/) 
      [https://wiki.ubuntu.com/Security/Upgrades](https://wiki.ubuntu.com/Security/Upgrades)
 
      ​
