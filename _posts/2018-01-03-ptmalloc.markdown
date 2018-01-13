@@ -411,6 +411,7 @@ do
               return NULL;
             }
           check_remalloced_chunk (av, victim, nb);//debug malloc
+          
           void *p = chunk2mem (victim);//去掉头部的内存块信息，将实际给用户使用的内存起始地址返回
 
           alloc_perturb (p, bytes);//依据perturb_byte初始化，perturb_byte由mallocopt设置
@@ -534,7 +535,7 @@ do
 
                  unsorted_chunks (av)->bk = unsorted_chunks (av)->fd = remainder;
                  av->last_remainder = remainder;//更新last_remainder指针
-                 
+
                  remainder->bk = remainder->fd = unsorted_chunks (av);
                  if (!in_smallbin_range (remainder_size))//非small，即large，因为在unsorted中，只有一个，所以nextsize指针置NULL
 
