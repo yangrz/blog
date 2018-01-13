@@ -393,11 +393,14 @@ typedef struct malloc_chunk *mfastbinptr;
 do
         {
           victim = pp;//pp为原始指针，victim为比较量
+
           if (victim == NULL)
             break;
         }
       while ((pp = catomic_compare_and_exchange_val_acq (fb, victim->fd, victim))//计算一个新值
+
              != victim);//比较新值和比较量victim，如果相等（原子修改成功）继续，不等退出。
+
       if (victim != 0)
         {
           if (__builtin_expect (fastbin_index (chunksize (victim)) != idx, 0))
@@ -409,8 +412,11 @@ do
             }
           check_remalloced_chunk (av, victim, nb);//debug malloc
           void *p = chunk2mem (victim);//去掉头部的内存块信息，将实际给用户使用的内存起始地址返回
+
           alloc_perturb (p, bytes);//依据perturb_byte初始化，perturb_byte由mallocopt设置
+
           return p;//成功分配到了内存，返回地址。
+          
         }
     }
 ```
@@ -677,7 +683,7 @@ do
 
                  /* Exhaust */
                //剩余的太小，会导致这个剩余的chunk失效，干脆整个返回给应用，相当于多给了。
-               
+
                  if (remainder_size < MINSIZE)
                    {
                      set_inuse_bit_at_offset (victim, size);
