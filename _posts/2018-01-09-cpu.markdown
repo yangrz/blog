@@ -13,7 +13,7 @@ tags:
 
 #### 0x01 背景
 
-​        meltdown（熔断）以及spectre（幽灵）从爆出到现在大概一个多星期时间了，spectre对应的CVE编号为[CVE-2017-5715](https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-5715.html)、[CVE-2017-5753](https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-5753.html),meltdown对应的CVE编号为[CVE-2017-5754.html](https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-5754.html)
+​        meltdown（熔断）以及spectre（幽灵）从爆出到现在大概一个多星期时间了，spectre对应的CVE编号为[CVE-2017-5715](https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-5715.html)、[CVE-2017-5753](https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-5753.html),meltdown对应的CVE编号为[CVE-2017-5754](https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-5754.html)
 
 ​	      关于meltdown和spectre相关研究最早是在2016年 Blackhat USA大会上有过相关的描述和猜想，研究人员发现，在现代的处理器架构的用户模式下，存在泄露内存区不可访问区域的敏感信息可能性，但是当时还没有具体的实现方法，之后才被格拉茨技术大学和其他实验室研究人员共同研究出该漏洞猜想的利用方法。
 
