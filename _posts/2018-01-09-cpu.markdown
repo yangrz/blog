@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "浅谈处理器级Spectre Attack及Poc分析"
-subtitle:   " \"cpu内核\""
+subtitle:   " \"安全研究\""
 date:       2018-01-09 09:10:25
 author:     "y1r0nz"
 header-img: "img/hack.jpg"
