@@ -270,11 +270,11 @@ int main(int argc, const char **argv) {
 
 #### 0x05 参考文献
 
-1. [http://bbs.antiy.cn/forum.php?mod=viewthread&tid=77670&extra=page%3D1](http://www.antiy.com/response/Meltdown+CPU-faq.html) 《Meltdown攻击与CPU体系结构的简明FAQ》
+1. [http://www.antiy.com/response/Meltdown+CPU-faq.html](http://www.antiy.com/response/Meltdown+CPU-faq.html) 《Meltdown攻击与CPU体系结构的简明FAQ》
 
 2. [https://zh.wikipedia.org/wiki/%E4%B9%B1%E5%BA%8F%E6%89%A7%E8%A1%8C)](https://zh.wikipedia.org/wiki/%E4%B9%B1%E5%BA%8F%E6%89%A7%E8%A1%8C) 乱序执行 from WiKi
 3. [https://spectreattack.com/spectre.pdf?spm=a313e.7916648.0.0.42867d79FbbHHi&file=spectre.pdf](https://spectreattack.com/spectre.pdf?spm=a313e.7916648.0.0.42867d79FbbHHi&file=spectre.pdf) 《Spectre Attack: Exploiting Speculative Execution》
-4. [https://spectreattack.com/spectre.pdf?spm=a313e.7916648.0.0.42867d79FbbHHi&file=spectre.pdf](https://spectreattack.com/spectre.pdf?spm=a313e.7916648.0.0.42867d79FbbHHi&file=spectre.pdf) 译文版 《Spectre Attack: Exploiting Speculative Execution》by 安天
+4. [http://bbs.antiy.cn/forum.php?mod=viewthread&tid=77670&extra=page%3D1](http://bbs.antiy.cn/forum.php?mod=viewthread&tid=77670&extra=page%3D1) 译文版 《Spectre Attack: Exploiting Speculative Execution》by 安天
 5. [https://lwn.net/Articles/738975/](https://lwn.net/Articles/738975/)  KAISER: hiding the kernel from user space
 6. [https://support.microsoft.com/en-us/help/4073119/protect-against-speculative-execution-side-channel-vulnerabilities-in](https://support.microsoft.com/en-us/help/4073119/protect-against-speculative-execution-side-channel-vulnerabilities-in) Windows Client Guidance for IT Pros to protect against speculative execution side-channel vulnerabilities
 7. [https://github.com/hannob/meltdownspectre-patches](https://github.com/hannob/meltdownspectre-patches) github上有关漏洞厂商相关跟踪信息的repo
