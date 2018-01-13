@@ -1,5 +1,5 @@
 #Site settings
-title: y1r0nz的技术博客
+title: 杨融泽的个人技术博客
 SEOTitle: y1r0nz Blog
 header-img: img/home-bg.jpg
 email: yangrz406@163.com
@@ -82,6 +82,14 @@ featured-condition-size: 0             # A tag will be featured if the size of i
 
 # Friends
 friends: [
+    {
+        title: "QingYu Blog",
+        href: "http://www.shystartree.com"
+    },
+     {
+        title: "CVE Common Vulnerabilities and Exposures",
+        href: "https://cve.mitre.org/"
+    },
     {
         title: "cnnvd国家信息安全漏洞库",
         href: "http://www.cnnvd.org.cn/"
