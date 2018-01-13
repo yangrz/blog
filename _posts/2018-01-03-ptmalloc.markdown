@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "聊聊glibc ptmalloc内存管理哪些事儿"
-subtitle:   " \"C\""
+subtitle:   " \"linux C\""
 date:       2017-12-20 21:54:31
 author:     "y1r0nz"
 header-img: "img/post-bg-unix-linux.jpg"
@@ -239,29 +239,50 @@ struct malloc_chunk {
    is just a hint as to how much memory will be required immediately
    in the new arena. */
 
-#define arena_get(ptr, size) do { \
-      arena_lookup (ptr);						      \
-      arena_lock (ptr, size);						      \
+#define arena_get(ptr, size) do { 
+
+      arena_lookup (ptr);						      
+
+      arena_lock (ptr, size);						      
+
   } while (0)
 
-#define arena_lookup(ptr) do { \
-      void *vptr = NULL;						      \
-      ptr = (mstate) tsd_getspecific (arena_key, vptr);			      \
+
+#define arena_lookup(ptr) do { 
+
+      void *vptr = NULL;						      
+
+      ptr = (mstate) tsd_getspecific (arena_key, vptr);			      
+
   } while (0)
 
-#define arena_lock(ptr, size) do {					      \
-      if (ptr)								      \
-        (void) mutex_lock (&ptr->mutex);				      \
-      else								      \
-        ptr = arena_get2 (ptr, (size), NULL);				      \
+
+
+#define arena_lock(ptr, size) do {					      
+
+      if (ptr)								      
+
+        (void) mutex_lock (&ptr->mutex);				      
+
+      else								      
+
+        ptr = arena_get2 (ptr, (size), NULL);				      
+
   } while (0)
+
+
 
 /* find the heap and corresponding arena for a given ptr */
 
-#define heap_for_ptr(ptr) \
+
+#define heap_for_ptr(ptr) 
+
   ((heap_info *) ((unsigned long) (ptr) & ~(HEAP_MAX_SIZE - 1)))
-#define arena_for_chunk(ptr) \
+
+#define arena_for_chunk(ptr) 
+
   (chunk_non_main_arena (ptr) ? heap_for_ptr (ptr)->ar_ptr : &main_arena)
+  
 
 ```
 
