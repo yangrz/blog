@@ -4,7 +4,7 @@ title:      "glibc  ptmalloc内存管理哪些事儿"
 subtitle:   " \"C\""
 date:       2017-12-20 21:54:31
 author:     "y1r0nz"
-header-img: "img/unix.jpg"
+header-img: "img/post-bg-unix-linux.jpg"
 tags:
     - 基础
 ---
