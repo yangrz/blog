@@ -282,7 +282,7 @@ struct malloc_chunk {
 #define arena_for_chunk(ptr) 
 
   (chunk_non_main_arena (ptr) ? heap_for_ptr (ptr)->ar_ptr : &main_arena)
-  
+
 
 ```
 
@@ -323,9 +323,9 @@ _int_malloc (mstate av, size_t bytes)
 ```c
 /* pad request bytes into a usable size -- internal version */
 
-#define request2size(req)                                         \
-  (((req) + SIZE_SZ + MALLOC_ALIGN_MASK < MINSIZE)  ?             \
-   MINSIZE :                                                      \
+#define request2size(req)                                         
+  (((req) + SIZE_SZ + MALLOC_ALIGN_MASK < MINSIZE)  ?            
+   MINSIZE :                                                      
    ((req) + SIZE_SZ + MALLOC_ALIGN_MASK) & ~MALLOC_ALIGN_MASK)
 ```
 
@@ -334,11 +334,11 @@ _int_malloc (mstate av, size_t bytes)
 ```c
 /*  Same, except also perform argument check */
 
-#define checked_request2size(req, sz)                             \
-  if (REQUEST_OUT_OF_RANGE (req)) {					      \
-      __set_errno (ENOMEM);						      \
-      return 0;								      \
-    }									      \
+#define checked_request2size(req, sz)                             
+  if (REQUEST_OUT_OF_RANGE (req)) {					      
+      __set_errno (ENOMEM);						      
+      return 0;								      
+    }									      
   (sz) = request2size (req);
 ```
 
@@ -513,9 +513,13 @@ do
               */
 
              if (in_smallbin_range (nb) &&//分配一个小内存，且上面的small bins没找到相应的chunk
+
                  bck == unsorted_chunks (av) &&//unsorted中的唯一chunk
+
                  victim == av->last_remainder &&//最后拆分
+
                  (unsigned long) (size) > (unsigned long) (nb + MINSIZE)) //大于所需+MINSIZE，剩余的chunk还要能继续使用
+
                {
                  /* split and reattach remainder */
                  remainder_size = size - nb;//该chunk中剩余大小
@@ -524,6 +528,7 @@ do
                  av->last_remainder = remainder;//更新last_remainder指针
                  remainder->bk = remainder->fd = unsorted_chunks (av);
                  if (!in_smallbin_range (remainder_size))//非small，即large，因为在unsorted中，只有一个，所以nextsize指针置NULL
+
                    {
                      remainder->fd_nextsize = NULL;
                      remainder->bk_nextsize = NULL;
@@ -542,6 +547,7 @@ do
 
              /* remove from unsorted list */
              unsorted_chunks (av)->bk = bck; //更新对应指针，将最后一个chunk删除
+
              bck->fd = unsorted_chunks (av);
    ```
 
@@ -551,6 +557,7 @@ do
 
              /* Take now instead of binning if exact fit */
    			//正好碰到一个chunk的大小等于所需大小，将当前chunk返回。
+
              if (size == nb)
                {
                  set_inuse_bit_at_offset (victim, size);
@@ -567,12 +574,14 @@ do
 
    ```c
    if (in_smallbin_range (size))  //遍历到一个smallbin，将之插入到对应index的smallbin链表的表头
+
                {
                  victim_index = smallbin_index (size);
                  bck = bin_at (av, victim_index);
                  fwd = bck->fd;
                }
              else //else就是large咯，处理跟small一样，插入对应index的largebin链表的表头
+
                {
                  victim_index = largebin_index (size);
                  bck = bin_at (av, victim_index);
@@ -580,12 +589,14 @@ do
 
                  /* maintain large bins in sorted order */
                  if (fwd != bck) //large中有空闲节点，按大小（从大到小）排序
+
                    {
                      /* Or with inuse bit to speed comparisons */
                      size |= PREV_INUSE;
                      /* if smaller than smallest, bypass loop below */
                      assert ((bck->bk->size & NON_MAIN_ARENA) == 0);
                      if ((unsigned long) (size) < (unsigned long) (bck->bk->size))//小于最小的，直接丢后面
+
                        {
                          fwd = bck;
                          bck = bck->bk;
@@ -595,6 +606,7 @@ do
                          fwd->fd->bk_nextsize = victim->bk_nextsize->fd_nextsize = victim;
                        }
                      else //一个一个遍历，找到合适位置并插入
+
                        {
                          assert ((fwd->size & NON_MAIN_ARENA) == 0);
                          while ((unsigned long) size < fwd->size)
@@ -617,6 +629,7 @@ do
                        }
                    }
                  else //largebin为空，直接插入
+
                    victim->fd_nextsize = victim->bk_nextsize = victim;
                }
 
@@ -644,8 +657,10 @@ do
              if ((victim = first (bin)) != bin &&
                  (unsigned long) (victim->size) >= (unsigned long) (nb))
                //large表不为空，且申请大小不超过其size
+
                {
                //遍历，找到合适chunk
+
                  victim = victim->bk_nextsize;
                  while (((unsigned long) (size = chunksize (victim)) <
                          (unsigned long) (nb)))
@@ -656,11 +671,13 @@ do
                  if (victim != last (bin) && victim->size == victim->fd->size)
                    victim = victim->fd;
    			//从找到的chunk中切分出所需大小
+
                  remainder_size = size - nb;
                  unlink (victim, bck, fwd);
 
                  /* Exhaust */
                //剩余的太小，会导致这个剩余的chunk失效，干脆整个返回给应用，相当于多给了。
+               
                  if (remainder_size < MINSIZE)
                    {
                      set_inuse_bit_at_offset (victim, size);
