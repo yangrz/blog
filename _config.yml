@@ -1,8 +1,8 @@
 #Site settings
 title: y1r0nz的技术博客
-SEOTitle: 杨融泽的技术博客 | y1r0nz Blog
+SEOTitle: y1r0nz Blog
 header-img: img/home-bg.jpg
-email: yangrz@gmail.com
+email: yangrz406@163.com
 description: ""
 keyword: ""
 url: "https://yangrz.github.io"              # your host, for absolute URL
@@ -12,9 +12,9 @@ baseurl: "/blog"         # for example, '/blog' if your blog hosted on 'host/blo
 
 # SNS settings
 RSS: false
-weibo_username:     Hotshotjj泽
-zhihu_username:     杨Ronzy
-github_username:    R0nzy
+weibo_username:     3198644617
+zhihu_username:     y1r0nz
+github_username:    yangrz
 #twitter_username:  yangrz
 #facebook_username:  yangrz
 

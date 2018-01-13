@@ -32,7 +32,7 @@ tags:
 
   ​	  每个进程在内存地址中都有自己的独立的内存空间，内存空间以PLT页表映射的方式将内存实际地址映射成虚拟地址，同时定义了内核地址特权保护相关手段。这样的内存空间主要分为用户可访问内存地址和不可访问的内核地址空间，
 
-  ![meltdown](/Users/y1r0nz/Downloads/meltdown.png)
+  ![meltdown](https://github.com/yangrz/blog/raw/gh-pages/img/meltdown.png)
 
 * 分支预测
 
@@ -206,7 +206,7 @@ int main(int argc, const char **argv) {
 }
 ```
 在ubuntu 14.04 x86-64 上运行结果见下图：
-![meltdown1](/Users/y1r0nz/Downloads/meltdown1.png)
+![meltdown1](https://github.com/yangrz/blog/raw/gh-pages/img/meltdown1.png)
 
 
 #### 0x04 修复方法
@@ -221,7 +221,7 @@ int main(int argc, const char **argv) {
 
   2. 使用管理员权限打开powershell，解压下载的文件定位到文件目录，执行如下图所示命令验证是否存在风险
 
-     ![meltdown4](/Users/y1r0nz/Downloads/meltdown4.png)
+     ![meltdown4](https://github.com/yangrz/blog/raw/gh-pages/img/meltdown4.png
 
      发现解决分支预测问题的功能模块都未开启，存在漏洞利用可能。
 
@@ -248,7 +248,7 @@ int main(int argc, const char **argv) {
 
   2. 运行如下命令验证处理器是否存在利用风险，
 
-     ![meltdown5](/Users/y1r0nz/Downloads/meltdown5.png)
+     ![meltdown5](https://github.com/yangrz/blog/raw/gh-pages/img/meltdown5.png)
 
      如果vulnerable值为on表示存在漏洞利用风险。
 
@@ -259,8 +259,10 @@ int main(int argc, const char **argv) {
      sudo apt-get dist-upgrade
      ```
 
-     具体可以参考下面两篇进行升级 
+     具体可以参考下面两篇进行升级
+      
      [https://usn.ubuntu.com/usn/usn-3524-1/](https://usn.ubuntu.com/usn/usn-3524-1/) 
+
      [https://wiki.ubuntu.com/Security/Upgrades](https://wiki.ubuntu.com/Security/Upgrades)
      ​
 
