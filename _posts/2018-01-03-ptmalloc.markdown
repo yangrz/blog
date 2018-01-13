@@ -21,13 +21,13 @@ tags:
 
 ​	在学习glibc堆内存管理机制之前，我们可以先看看，linux的elf文件对应内存中进程的内存经典布局。这里引用华庭那篇文章的图。因为自己之前有做过java开发，关于内存管理都是交给jvm完成，java底层使用的c实现，所以话说回来，java的内存自动回收机制还是基于c的，可见学习c的内存管理机制对理解内核工作机制有很好的帮助。
 
-![WX20171221-102332@2x](/Users/y1r0nz/Downloads/WX20171221-102332@2x.png)
+![WX20171221-102332@2x](https://github.com/yangrz/blog/raw/gh-pages/img/WX20171221-102332@2x.png)
 
 ​	以32位操作系统为例，从图中可以看到堆内存是从底地址到高地址方向增长的，函数栈是从高地址向底地址方向增长的，从底地址开始依次为.text segment（rx），.data segment（rw）和.bss segment（r）段，这三个段负责保存进程的代码、常量和初始化等信息。.bss segment 和stack之间的空闲空间就是堆了，分为heap和mmap两个区域，这两个区域在内存没有动态映射分配之前是不能访问的，必须使用c的malloc和free等函数进行动态内存分配管理。stack不需要映射就可以访问。kernel space有1g的空间，这1个g的空间也是不能访问（读写）的，供进程处理系统调用。
 
 我们再来看下64位系统下进程分配内存的布局。
 
-![WX20171221-102937@2x](/Users/y1r0nz/Downloads/WX20171221-102937@2x.png)
+![WX20171221-102937@2x](https://github.com/yangrz/blog/raw/gh-pages/img/WX20171221-102937@2x.png)
 
 
 
@@ -57,7 +57,7 @@ tags:
 
   glibc内存管理单元是以chunk来组织的。chunk的格式如下
 
-  ![WX20180103-161039@2x](/Users/y1r0nz/Downloads/WX20180103-161039@2x.png)
+  ![WX20180103-161039@2x](https://github.com/yangrz/blog/raw/gh-pages/img/WX20180103-161039@2x.png)
 
   chunk从size of previous chunk开始，按照size_t*2（通常是16B和32B）对齐，mem指针指向实际分配给用户地址空间开始处。chunk中第二个域第一位为P，通常表示前一个chunk块是否在使用中，P为0时表示前一个块空闲，第一个域size of previous chunk才有效，程序可以通过这个值找到前一个chunk块的地址。P为1时表示前一个chunk块正在被使用，prev_size这时无效，所以程序就不能够得到前一个chunk块的初始地址。M表示chunk块是否是mmap分配，为1表示从mmap分配过来的，否则为heap区域。A表示该chunk是否属于主分配区，1表示主分配区，否则为分主分配区。
 
@@ -67,13 +67,13 @@ tags:
 
   _nextsize和bk_nextsize，这两个指针用于加快在large bin中查找最近匹配的空闲chunk。不同的chunk链表又是通过bins或者fastbins来组织的
 
-  ![WX20180103-162535@2x](/Users/y1r0nz/Downloads/WX20180103-162535@2x.png)
+  ![WX20180103-162535@2x](https://github.com/yangrz/blog/raw/gh-pages/img/WX20180103-162535@2x.png)
 
   ​
 
 #### 0x05 空闲chunk容器组织
 
-![WX20180103-234409@2x](/Users/y1r0nz/Downloads/WX20180103-234409@2x.png)
+![WX20180103-234409@2x](https://github.com/yangrz/blog/raw/gh-pages/img/WX20180103-234409@2x.png)
 
 * Bins
 
@@ -267,7 +267,7 @@ struct malloc_chunk {
 
 下面来看核心函数_int_malloc代码（malloc.c:3294）
 
-```C
+```c
 
 /*
    ------------------------------ malloc ------------------------------
@@ -299,7 +299,7 @@ _int_malloc (mstate av, size_t bytes)
 
 2. 将用户的请求大小转换为实际需要分配的 chunk 空间大小. 具体查看 request2size 宏 (malloc.c:1243)
 
-```C
+```c
 /* pad request bytes into a usable size -- internal version */
 
 #define request2size(req)                                         \
@@ -310,7 +310,7 @@ _int_malloc (mstate av, size_t bytes)
 
 ​	这里request2size根据请求的大小与minsize进行判断，如果超出合理范围返回异常，如果在范围内则返回min（minsize，req+size_sz+malloc_align_mask），至于为什么可以看华庭的那篇文章。
 
-```C
+```c
 /*  Same, except also perform argument check */
 
 #define checked_request2size(req, sz)                             \
@@ -323,7 +323,7 @@ _int_malloc (mstate av, size_t bytes)
 
 3. 判断所需分配 chunk 的大小是否满足 chunk_size <= max_fast (max_fast 默认为 64B), 如果是的话, 则转下一步, 否则跳到第 5 步. (malloc.c:3340)
 
-```C
+```c
  /*
      If the size qualifies as a fastbin, first check corresponding bin.
      This code is safe to execute even if av is not yet initialized, so we
@@ -340,7 +340,7 @@ _int_malloc (mstate av, size_t bytes)
 
 ​	这里确定请求大小所属哪个bin链表由函数fastbin_index来确定，根据size_sz大小来确定binmap中的位置。若size_sz不为8，10个fast bin中所包含的fast chunk size是按照步进8字节排列的，即第一个fast bin中所有fast chunk size均为16字节，第二个fast bin中为24字节，依次类推。(malloc.c:1570)
 
-```C
+```c
 /*
    Fastbins
 
@@ -368,7 +368,7 @@ typedef struct malloc_chunk *mfastbinptr;
 
 4. 继续返回来看_int_malloc函数。首先尝试在 Fastbins 中查找所需大小的 chunk 分配给用户. 如果可以找到, 则分配结束. 否则转到下一步. checkmem函数指向用户实际使用的空间(malloc.c:3340)
 
-```C
+```c
 do
         {
           victim = pp;//pp为原始指针，victim为比较量
@@ -396,7 +396,7 @@ do
 
 5. 判断所需大小是否处在 small bins 中, 即判断 chunk_size < 512B 是否成立. 如果 chunk 大小处在 small bins 中, 则转下一步, 否则转到第 7 步. (malloc.c:3366)
 
-   ```C
+   ```c
    /*
         If a small request, check regular bin.  Since these "smallbins"
         hold one size each, no searching within bins is necessary.
@@ -411,7 +411,7 @@ do
 
 6. 根据所需分配的 chunk 的大小, 找到具体所在的某个 small bin, 从该 Bin 的尾部摘取一个恰好满足大小的 chunk（FIFO）. 若成功, 则分配结束, 否则, 转到 8. (malloc.c:3377)。
 
-   ```C
+   ```c
    if (in_smallbin_range (nb))
        {
          idx = smallbin_index (nb);
@@ -448,7 +448,7 @@ do
 
 7. 到了这一步, 说明需要分配的是一块大的内存, 于是, ptmalloc 首先会遍历 Fastbins 中的 chunk, 将相邻的空闲 chunk 进行合并, 并链接到 unsorted bin 中. 对于 Fastbins 的合并是由 `malloc_consolidate` 做处理. (malloc.c:3421)
 
-   ```C
+   ```c
    /*
         If this is a large request, consolidate fastbins before continuing.
         While it might look excessive to kill all fastbins before
@@ -470,7 +470,7 @@ do
 
 8. 遍历 unsorted bin 中的 chunk, 如果请求的 chunk 是一个 small chunk, 且 unsorted bin 只有一个 chunk, 并且这个 chunk 在上次分配时被使用过(也就是 last_remainder), 并且 chunk 的大小大于 (分配的大小 + MINSIZE), 这种情况下就直接将该 chunk 进行切割, 分配结束, 
 
-   ```C
+   ```c
    for (;; )
        {
          int iters = 0;
@@ -526,7 +526,7 @@ do
 
    否则继续遍历, 如果发现一个 unsorted bin 的 size 恰好等于需要分配的 size, 命中缓存, 分配结束, 
 
-   ```C
+   ```c
 
              /* Take now instead of binning if exact fit */
    			//正好碰到一个chunk的大小等于所需大小，将当前chunk返回。
@@ -544,7 +544,7 @@ do
 
    否则将根据 chunk 的空间大小将其放入对应的 small bins 或是 large bins 中, 遍历完成后, 转入下一步. (malloc.c:3442)
 
-   ```C
+   ```c
    if (in_smallbin_range (size))  //遍历到一个smallbin，将之插入到对应index的smallbin链表的表头
                {
                  victim_index = smallbin_index (size);
@@ -608,7 +608,7 @@ do
 
 9. 到了这一步说明需要分配的是一块大的内存, 并且 Fastbins 和 unsorted bin 中所有的 chunk 都清除干净 了. 从 large bins 中按照 “smallest-first, best-fit”(最小&合适, 也就是说大于或等于所需 size 的最小 chunk) 原则, 找一个合适的 chunk, 从中划分一块合适大小的 chunk 进行切割, 并将剩下的部分放到 unsorted bin, 若操作成功, 则分配结束, 否则转到下一步. (malloc.c:3576)
 
-   ```C
+   ```c
 
          /*
             If a large request, scan through the chunks of current bin in
@@ -684,7 +684,7 @@ do
 
 10. 到了这一步说明在对应的 bin 上没有找到合适的大小, 无论是 small bin 还是 large bin, 对于 small bin, 如果没有对应大小的 small bin, 只能 idx+1. 对于 large bin,在上一步的 large bin 并不一定能找到合适的 chunk 进行切割, 因为 large bins 间隔是很大的, 假如当前的 idx 的 large bin 只有一个 chunk, 但是所需 size 大于该 chunk, 这就导致找不到合适的, 只能继续 idx+1, 最后都需要根据 bitmap 找到之后第一个非空闲的 bin. 在这两种情况下找到的 bin 中的 chunk 一定可以进行切割或者全部分配(剩余的 size < MINSIZE) (malloc.c:3649)
 
-    ```C
+    ```c
     /*
              Search for a chunk by scanning bins, starting with next largest
              bin. This search is strictly by best-fit; i.e., the smallest
@@ -705,7 +705,7 @@ do
 
 11. 如果仍然都没有找到合适的 chunk, 那么就需要操作 top chunk 来进行分配了. 判断 top chunk 大小是否满足所需 chunk 的大小, 如果是, 则从 top chunk 中分出一块来. 否则转到下一步. (malloc.c:3749)
 
-    ```C
+    ```c
     use_top:
           /*
              If large enough, split off the chunk bordering the end of memory
@@ -768,7 +768,7 @@ do
 
 12. 到了这一步, 说明 top chunk 也不能满足分配要求, 所以, 于是就有了两个选择: 如果是主分配区, 调用 sbrk(), 增加 top chunk 大小；如果是非主分配区, 调用 mmap 来分配一个新的 sub-heap, 增加 top chunk 大小；或者使用 mmap()来直接分配. 在这里, 需要依靠 chunk 的大小来决定到底使用哪种方法. 判断所需分配的 chunk 大小是否大于等于 mmap 分配阈值, 如果是的话, 则转下一步, 调用 mmap 分配, 否则跳到第 13 步, 增加 top chunk 的大小. (malloc.c:3800)
 
-    ```C
+    ```c
      /*
              Otherwise, relay to handle system-dependent cases
            */
