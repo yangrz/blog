@@ -13,7 +13,9 @@ tags:
 
 #### 0x01 背景
 
-​        关于meltdown和spectru相关研究最早是在2016年 Blackhat USA大会上有过相关的描述和猜想，研究人员发现，在现代的处理器架构的用户模式下，存在泄露内存区不可访问区域的敏感信息可能性，但是当时还没有具体的实现方法，之后才被格拉茨技术大学和其他联合实验室共同研究处实现方法。
+​        meltdown（熔断）以及spectre（幽灵）从爆出到现在大概一个多星期时间了，spectre对应的CVE编号为[CVE-2017-5715](https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-5715.html)、[CVE-2017-5753](https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-5753.html),meltdown对应的CVE编号为[CVE-2017-5754.html](https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-5754.html)
+
+​	      关于meltdown和spectre相关研究最早是在2016年 Blackhat USA大会上有过相关的描述和猜想，研究人员发现，在现代的处理器架构的用户模式下，存在泄露内存区不可访问区域的敏感信息可能性，但是当时还没有具体的实现方法，之后才被格拉茨技术大学和其他实验室研究人员共同研究出该漏洞猜想的利用方法。
 
 ​        处理器级别漏洞一般可以影响整个云计算基础设施的发展历史，cpu本身的架构同时也面临着严峻的考验。在看了遍大致原理之后，结合之前在公司上cissp课的时候老师讲过的side channel attack侧信道攻击的相关知识，算是把漏洞基本上弄懂了。首先我们先来看下几个需要掌握的概念。
 * 乱序执行 
