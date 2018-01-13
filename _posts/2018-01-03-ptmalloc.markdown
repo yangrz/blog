@@ -416,7 +416,7 @@ do
           alloc_perturb (p, bytes);//依据perturb_byte初始化，perturb_byte由mallocopt设置
 
           return p;//成功分配到了内存，返回地址。
-          
+
         }
     }
 ```
@@ -529,9 +529,12 @@ do
                {
                  /* split and reattach remainder */
                  remainder_size = size - nb;//该chunk中剩余大小
+
                  remainder = chunk_at_offset (victim, nb);//剩余的chunk地址
+
                  unsorted_chunks (av)->bk = unsorted_chunks (av)->fd = remainder;
                  av->last_remainder = remainder;//更新last_remainder指针
+                 
                  remainder->bk = remainder->fd = unsorted_chunks (av);
                  if (!in_smallbin_range (remainder_size))//非small，即large，因为在unsorted中，只有一个，所以nextsize指针置NULL
 
