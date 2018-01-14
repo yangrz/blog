@@ -59,10 +59,10 @@ duoshuo_share: true                    # set to false if you want to use Comment
 
 # Analytics settings
 # Baidu Analytics
-ba_track_id: 23d5af7ee87586bdc6a4fe68f774f0ee
+#ba_track_id: 23d5af7ee87586bdc6a4fe68f774f0ee
 # Google Analytics
-ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
-ga_domain: huangxuan.me
+#ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
+#ga_domain: huangxuan.me
 
 
 
@@ -83,7 +83,7 @@ featured-condition-size: 0             # A tag will be featured if the size of i
 # Friends
 friends: [
     {
-        title: "QingYu Blog",
+        title: "QingYu‘s Blog",
         href: "http://www.shystartree.com"
     },
      {
