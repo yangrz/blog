@@ -97,7 +97,7 @@ tags:
 
 #### 0x05 相关文献
 
-1. [http://www.freebuf.com/news/160917.html](http://www.freebuf.com/news/160917.html) 《挖洞经验 | 看我如何利用两个漏洞实现雅虎邮箱通讯录信息获取》
-2. [http://www.freebuf.com/articles/web/158529.html](http://www.freebuf.com/articles/web/158529.html) 《挖洞经验 | 看我如何绕过Yahoo！View的CORS限制策略
+1. [http://www.freebuf.com/news/160917.html](http://www.freebuf.com/news/160917.html) 《挖洞经验 \| 看我如何利用两个漏洞实现雅虎邮箱通讯录信息获取》
+2. [http://www.freebuf.com/articles/web/158529.html](http://www.freebuf.com/articles/web/158529.html) 《挖洞经验 \| 看我如何绕过Yahoo！View的CORS限制策略
 3. [http://www.ruanyifeng.com/blog/2016/04/cors.html](http://www.ruanyifeng.com/blog/2016/04/cors.html) 《跨域资源共享 CORS 详解》
 4. [http://www.vuln.cn/6773](http://www.vuln.cn/6773) 《利用JSONP进行水坑攻击》
