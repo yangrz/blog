@@ -59,7 +59,7 @@ tags:
 
 ​	根据[Wiki](https://zh.wikipedia.org/wiki/URL%E9%87%8D%E5%AF%AB)里面对url重写的解释：url rewrite是一种REST的相关技术，它可以在 Web Server 中，针对用户所提供的 URL 进行转换后，再传入 Web Server 中的程序处理器。这里可以知道url重写其实就是将常见携带参数形式的url重写为不携带参数的伪静态形式，在题目中可以反映为：
 
- ```http://39.107.33.96:20000/index.php/view/article/1494```等价于```http://39.107.33.96:20000/index.php?methode=view&article=1494```
+__http://39.107.33.96:20000/index.php/view/article/1494__ 等价于 __http://39.107.33.96:20000/index.php?methode=view&article=1494__
 
 这样的形式。
 
