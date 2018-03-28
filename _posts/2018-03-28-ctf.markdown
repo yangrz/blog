@@ -31,11 +31,11 @@ tags:
 
    ![share your mind1](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind1.png)	
 
-​	根据这题的提示来到题目主页，这里要求输入用户名密码，注册了个账户发现能用便进去一看究竟了。
+​	根据这题的提示来到题目主页，这里要求输入用户名密码，注册了个账户发现能用便进去一看究竟。
 
 ![share your mind2](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind2.png)
 
-​	来到主页report页面中发现了这样一个输入框，网站开发人员想要你把存在问题的页面链接提交给后台给他处理。大多数老铁和司机们看到这里基本上可以断定这题是一个xss盲打后台管理员cookie的了。
+​	来到主页report页面中发现了这样一个输入框，网站开发人员想要你把存在问题的页面链接提交给后台给他处理。大多数老铁和司机们看到这里基本上可以断定这题是一个xss盲打后台管理员cookie的套路题。
 
 ![share your mind3](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind4.png)
 
