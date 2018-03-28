@@ -73,9 +73,7 @@ __http://39.107.33.96:20000/index.php/view/article/1494__ 等价于 __http://39.
 
 ![share your mind9](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind9.png)
 
-下面可以来实验一下，在write article页面写入alert(1)这种js语句。然后构造上述请求，最终触发xss。
-
-```http://39.107.33.96:20000/index.php/view/article/1493/..%2f..%2f..%2f..%2findex.php```
+下面可以来实验一下，在write article页面写入alert(1)这种js语句。然后构造上述请求```http://39.107.33.96:20000/index.php/view/article/1493/..%2f..%2f..%2f..%2findex.php```，最终触发xss。
 
 ![share your mind10](https://github.com/yangrz/blog/raw/gh-pages/img/share your mind10.png)
 
