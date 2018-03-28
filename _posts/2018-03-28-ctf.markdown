@@ -25,7 +25,7 @@ tags:
 
 #### 0x02 关于做share your mind这题自己的一些心得
 
-* 漏洞挖掘以及RPO XSS成因
+* __漏洞挖掘以及RPO XSS成因__
 
 ​	首先这题是一道web题，初步看了下提示以后就开始做了。
 
@@ -59,7 +59,7 @@ tags:
 
 ​	根据[Wiki](https://zh.wikipedia.org/wiki/URL%E9%87%8D%E5%AF%AB)里面对url重写的解释：url rewrite是一种REST的相关技术，它可以在 Web Server 中，针对用户所提供的 URL 进行转换后，再传入 Web Server 中的程序处理器。这里可以知道url重写其实就是将常见携带参数形式的url重写为不携带参数的伪静态形式，在题目中可以反映为：
 
-__http://39.107.33.96:20000/index.php/view/article/1494__ 等价于 __http://39.107.33.96:20000/index.php?methode=view&article=1494__
+```http://39.107.33.96:20000/index.php/view/article/1494``` 等价于 ```http://39.107.33.96:20000/index.php?methode=view&article=1494```
 
 这样的形式。
 
@@ -83,7 +83,7 @@ __http://39.107.33.96:20000/index.php/view/article/1494__ 等价于 __http://39.
 
 显然，alert(1)这条语句最终引入到jquery.min.js中并覆盖掉原文件内容，浏览器误以为jquery.min.js 中的内容为alert(1)导致js脚本被执行。
 
-* 漏洞最终利用
+* __漏洞最终利用__
 
 有了RPO XSS这个核武器，接下来就可以构造rpxss payload的exp脚本了。之前有提到服务端对所有输出到页面的字符使用了htmlspecialchar函数处理，故不可以使用单引号的。所以这里还有一个知识点就是使用javascript的fromCharCode函数绕过过滤限制。可以构造类似如下payload：
 
