@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "强网杯CTF wtiteup之share your mind"
+title:      "强网杯CTF writeup之share your mind"
 subtitle:   " \"安全研究\""
 date:       2018-03-27 22:30:32
 author:     "y1r0nz"
