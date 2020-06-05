@@ -4,7 +4,7 @@ title:      "Frida脱壳技术研究"
 subtitle:   " \"移动安全\""
 date:       2020-06-03 16:16:25
 author:     "y1r0nz"
-header-img: "img/unix.jpg"
+header-img: "img/hack.jpg"
 tags:
     - 移动安全
     - 安全研究
