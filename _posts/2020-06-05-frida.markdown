@@ -1,0 +1,129 @@
+---
+layout:     post
+title:      "Frida脱壳技术研究"
+subtitle:   " \"移动安全\""
+date:       2020-06-03 16:16:25
+author:     "y1r0nz"
+header-img: "img/unix.jpg"
+tags:
+    - 移动安全
+    - 安全研究
+---
+
+
+
+#### 0x01 frida简介 
+
+Frida是一款基于python + javascript 的hook框架，适用于android/ios/linux/win/osx等平台。Frida的动态代码执行功能，主要是在它的核心引擎Gum中用C语言来实现的。
+* 注入模式
+* 嵌入模式
+* 自动加载模式
+
+--- 
+
+#### 0x02 frida hook环境搭建
+
+* __搭建环境__：
+  1. Win10 x64
+  2. 已root手机 Google Pixel XL
+  3. Android 8.1（有些hook场景不支持，最好使用7.1以下，4.4以上）；
+  4. 夜神android模拟器（需开启root模式，存在第三方加固防模拟器运行情况）
+  5. Python 3.8 & Frida 12.9.4
+
+* __搭建过程简述__  
+frida采用c/s架构，服务端可简单理解为需要进行动态调试的手机设备，客户端为控制端pc电脑。   
+使用pip安装frida本地客户端（注意使用python3，python2 frida不支持）：
+
+  ```
+  pip install frida
+  pip install frida-tools
+  ```  
+  
+
+进入frida官网release下载对应版本的frida-server ([https://github.com/frida/frida/releases](https://github.com/frida/frida/releases)),我客户端是12.9.4，所以server端也下载与客户端匹配的版本。  
+![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida1.png)  
+下载完成后使用adb将frida-server推送到手机设备的/data/local/tmp目录下  
+
+  ```
+  adb push ./frida-server-12.9.4-android-arm64 /data/local/tmp 
+  ```
+进入adb shell使用root权限，将frida-server重命名为frida，chmod将脚本权限改成777，并执行。
+
+  ```
+  marlin:/ $ su
+  marlin:/ # cd /data/local/tmp
+  marlin:/data/local/tmp # ./frida-server &
+  ```
+本地PC客户端执行frida-ps命令验证是否成功，如有返回，则搭建完成。
+
+  ```
+  frida-ps -U
+  ```
+成功返回如下图，至此frida环境搭建完成。  
+![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida1.png)
+
+
+--- 
+
+#### 0x03 APP加固技术发展历程
+总结为下图：  
+![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida3.png)  
+  
+---
+
+#### 0x04 使用frida进行脱壳
+* __加壳技术浅析__  
+在了解frida脱壳技术之前，首先要了解下什么是加壳。加壳是指在一个程序外面再包裹上另一段代码，保护里面的代码不被修改或被反编译的程序，它们一般都是先于程序运行，拿到控制权，然后完成它们对软件的保护。  
+* __APK加固方式__  
+安卓源码编译后dex文件格式。我们知道dex文件为dalvik字节码格式文件，可在dalvik虚拟机上执行。  
+__1.代码层级加密__  
+(1) 代码混淆  
+代码混淆是一种常用的加密方式。本质是把工程中原来的有具体含义的类名、变量名、方法名，修改成让人看不懂的名字。常见的代码混淆工具proguard。该加密方式只是对工程提供了最小的保护，并不是说不能逆向破解；只是说难度增加，需要耐心。  
+(2) DEX文件加密  
+dex是Android工程中的代码资源文件，通过dex可以反编译出java代码。dex的加壳是常见的加密方式。通过对dex文件加密拼接加壳，可以有效的对工程代码进行保护。apk工程在安装成功后，app启动时会有dex解密的过程，然后重新加载解密后的dex文件。  
+__2.JNI层级加密__  
+这种加密方式也就是本文分享的加密方式。基本原理是在jni层， 使用DexClassLoader动态加载技术完成对加密classex.dex的动态加载，dex文件可以附属在assert或raw目录。  
+* __APK加固原理__  
+在了解加固原理之前先来看下android虚拟机技术，Dalvik虚拟机简称Dalvik VM或者DVM，是Google专门为Android平台开发的虚拟机，它运行在Android运行库中，需要注意的是DVM并不是一个Java虚拟机（Jvm虚拟机），在android5.0以后，默认采用ART虚拟机了，
+ART虚拟机是Android4.4发布的，用来替换Dalvik虚拟机。  
+__(1) Android打包流程__  
+  ![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida4.png)  
+__(2) Apk包文件组成__  
+  ![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida5.png)  
+__(3) 什么是DEX文件__  
+Dex文件是可以直接在Dalvik虚拟机中加载运行的文件，包含应用程序的全部操作指令以及运行时数据Dalvik是一种针对嵌入式设备而特殊设计的java虚拟机，所以dex文件与标准的class文件在结构设计上有着本质的区别Java代码通过Java编译器（javac）编译成java字节码，即.class文件，通过Android的dx工具转换成Dalvik字节码，即.dex文件。目的是其中各个类能够共享数据，在一定程度上降低了冗余，同时也是文件结构更加经凑，实验表明，dex文件是传统jar文件大小的50%左右。  
+dex文件结构如下：  
+![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida6.png)   
+dex文件结构说明：  
+![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida7.png)  
+dex header文件头说明：  
+![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida8.png)  
+__(4) DEX加固原理__  
+![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida9.png)  
+
+* __ART模式下基于frida框架脱壳技术原理__  
+不同于传统java应用层hook dump出dex文件，而是从系统层面拦截hook到OpenMemory函数进行dump。
+一般安卓加载代码都是通过classloader来装取本地代码到内存中去的。  
+__ClassLoader有两种加载方式：__  
+__1.通过路径寻找本地代码，然后装入内存__  
+基本的源码顺序是BaseDexClassLoader——>DexPathList——>makeDexElement——>loadDexFile—>dDexFile.loadDex
+最后DexFile中有个native方法，OpenDexFileNative对应了DexFile_openDexFileNative方法，其中的OpenDexFileFormOat就是最主要的方法了。  
+__2.直接映射到内存中去__  
+4.x中DexFile.loadDex这个方法已经摒弃了，使用的是  
+
+  ```
+  native private static int openDexFile(byte[] fileContents);
+  ```  
+  然而这个方法在5.0中也已经摒弃了，在native层中依旧存在于/art/runtime/dex_file.cc中。其方法为OpenMemory函数。我们只需要hook 拦截到这个方法dump出dex文件就ok。下面就展开介绍下常见的几个针对这种脱壳模式的frida框架脱壳工具脚本。  
+__FRIDA-DEXDUMP__  
+github地址：[https://github.com/hluwa/FRIDA-DEXDump](https://github.com/hluwa/FRIDA-DEXDump)  
+这个工具主要是暴力搜索内存dump dex方式。  
+对于完整的dex，采用暴力搜索dexn035即可找到。
+而对于抹头的dex，通过匹配一些特征来找到，然后自动修复文件头，很强大的一个脚本工具。  
+![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida10.png)  
+__Frida-Apk-Unpack__  
+github地址：  
+[https://github.com/hluwa/FRIDA-DEXDump](https://github.com/hluwa/FRIDA-DEXDump)  
+[https://github.com/GuoQiang1993/Frida-Apk-Unpack](https://github.com/GuoQiang1993/Frida-Apk-Unpack)  
+上面这三个工具都是优先找到OpenMemory和OpenCommon函数，在内存中，也就是app loader以后查找dex文件头dex035，然后根据dex size偏移量把dex整个dump下来。但这个工具在android7.1以上测试由于hook opencommon(libart.so中openmemory去掉了，只能用opencommon这个入口)函数，存在无法唤醒函数情况。
+  
