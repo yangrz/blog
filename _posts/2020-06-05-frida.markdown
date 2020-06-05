@@ -41,7 +41,7 @@ frida采用c/s架构，服务端可简单理解为需要进行动态调试的手
   
 
 进入frida官网release下载对应版本的frida-server ([https://github.com/frida/frida/releases](https://github.com/frida/frida/releases)),我客户端是12.9.4，所以server端也下载与客户端匹配的版本。  
-![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida1.png)  
+![image](https://github.com/yangrz/blog/raw/gh-pages/img/frida1.png)  
 下载完成后使用adb将frida-server推送到手机设备的/data/local/tmp目录下  
 
   ```
@@ -60,14 +60,14 @@ frida采用c/s架构，服务端可简单理解为需要进行动态调试的手
   frida-ps -U
   ```
 成功返回如下图，至此frida环境搭建完成。  
-![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida1.png)
+![image](https://github.com/yangrz/blog/raw/gh-pages/img/frida2.png)
 
 
 --- 
 
 #### 0x03 APP加固技术发展历程
 总结为下图：  
-![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida3.png)  
+![image](https://github.com/yangrz/blog/raw/gh-pages/img/frida3.png)  
   
 ---
 
@@ -87,19 +87,19 @@ __2.JNI层级加密__
 在了解加固原理之前先来看下android虚拟机技术，Dalvik虚拟机简称Dalvik VM或者DVM，是Google专门为Android平台开发的虚拟机，它运行在Android运行库中，需要注意的是DVM并不是一个Java虚拟机（Jvm虚拟机），在android5.0以后，默认采用ART虚拟机了，
 ART虚拟机是Android4.4发布的，用来替换Dalvik虚拟机。  
 __(1) Android打包流程__  
-  ![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida4.png)  
+  ![image](https://github.com/yangrz/blog/raw/gh-pages/img/frida4.png)  
 __(2) Apk包文件组成__  
-  ![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida5.png)  
+  ![image](https://github.com/yangrz/blog/raw/gh-pages/img/frida5.png)  
 __(3) 什么是DEX文件__  
 Dex文件是可以直接在Dalvik虚拟机中加载运行的文件，包含应用程序的全部操作指令以及运行时数据Dalvik是一种针对嵌入式设备而特殊设计的java虚拟机，所以dex文件与标准的class文件在结构设计上有着本质的区别Java代码通过Java编译器（javac）编译成java字节码，即.class文件，通过Android的dx工具转换成Dalvik字节码，即.dex文件。目的是其中各个类能够共享数据，在一定程度上降低了冗余，同时也是文件结构更加经凑，实验表明，dex文件是传统jar文件大小的50%左右。  
 dex文件结构如下：  
-![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida6.png)   
+![image](https://github.com/yangrz/blog/raw/gh-pages/img/frida6.png)   
 dex文件结构说明：  
-![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida7.png)  
+![image](https://github.com/yangrz/blog/raw/gh-pages/img/frida7.png)  
 dex header文件头说明：  
-![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida8.png)  
+![image](https://github.com/yangrz/blog/raw/gh-pages/img/frida8.png)  
 __(4) DEX加固原理__  
-![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida9.png)  
+![image](https://github.com/yangrz/blog/raw/gh-pages/img/frida9.png)  
 
 * __ART模式下基于frida框架脱壳技术原理__  
 不同于传统java应用层hook dump出dex文件，而是从系统层面拦截hook到OpenMemory函数进行dump。
@@ -120,7 +120,7 @@ github地址：[https://github.com/hluwa/FRIDA-DEXDump](https://github.com/hluwa
 这个工具主要是暴力搜索内存dump dex方式。  
 对于完整的dex，采用暴力搜索dexn035即可找到。
 而对于抹头的dex，通过匹配一些特征来找到，然后自动修复文件头，很强大的一个脚本工具。  
-![image](https://github.com/yangrz/blog/blob/gh-pages/img/frida10.png)  
+![image](https://github.com/yangrz/blog/raw/gh-pages/img/frida10.png)  
 __Frida-Apk-Unpack__  
 github地址：  
 [https://github.com/hluwa/FRIDA-DEXDump](https://github.com/hluwa/FRIDA-DEXDump)  
