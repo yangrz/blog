@@ -14,7 +14,7 @@ tags:
 
 #### 0x01 frida简介 
 
-Frida是一款基于python + javascript 的hook框架，适用于android/ios/linux/win/osx等平台。Frida的动态代码执行功能，主要是在它的核心引擎Gum中用C语言来实现的。
+所谓“赵客缦胡缨，吴钩霜雪明”，工欲善其事必先利其器，在安卓应用安全领域，如果需要探索安卓系统内存结构，需要有一款强大的辅助工具。Frida是一款基于python + javascript 的hook框架，适用于android/ios/linux/win/osx等平台。Frida的动态代码执行功能，主要是在它的核心引擎Gum中用C语言来实现的。可以简单的把frida hook模式区分为以下三种。  
 * 注入模式
 * 嵌入模式
 * 自动加载模式
